@@ -138,7 +138,17 @@ app.get('/terms', (req, res) => {
 app.get('/support', (req, res) => {
   res.send('<h1>MaidConnect Support</h1><p>Email: support@maidconnect.com</p>');
 });
+// ── GET EVENTS ──
+app.get('/events', async (req, res) => {
+  const events = await EventLog.find().sort({ receivedAt: -1 }).limit(50);
+  res.json(events);
+});
 
+// ── GET USERS ──
+app.get('/users', async (req, res) => {
+  const users = await User.find().select('-accessToken -refreshToken');
+  res.json(users);
+});
 // ── START SERVER ──
 const PORT = process.env.PORT || 3000;
 // ── GET EVENTS ──
