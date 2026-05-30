@@ -58,18 +58,41 @@ app.post('/oauth/callback', (req, res) => {
 
 // ── 4. WEBHOOK URL ──
 // Ring sends doorbell / motion events here
-app.post('/webhook', (req, res) => {
+app.post('/webhook', async (req, res) => {
   const event = req.body;
   console.log('Ring event received:', JSON.stringify(event, null, 2));
 
   const eventType = event?.event?.type || 'unknown';
 
   if (eventType === 'doorbell.ring') {
-    console.log('🔔 Maid is at the door! Send push notification.');
+    console.log('🔔 Maid is at the door!');
+    try {
+      await admin.messaging().send({
+        notification: {
+          title: '🔔 Maid Arrived!',
+          body: 'Your maid is at the door'
+        },
+        topic: 'maid-alerts'
+      });
+      console.log('Push notification sent successfully');
+    } catch (err) {
+      console.error('Failed to send notification:', err);
+    }
   }
 
   if (eventType === 'motion.detect') {
     console.log('🚶 Motion detected — possible maid arrival.');
+    try {
+      await admin.messaging().send({
+        notification: {
+          title: '🚶 Motion Detected',
+          body: 'Someone may be arriving at your door'
+        },
+        topic: 'maid-alerts'
+      });
+    } catch (err) {
+      console.error('Failed to send notification:', err);
+    }
   }
 
   res.status(200).json({ received: true, event: eventType });
