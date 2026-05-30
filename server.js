@@ -1,33 +1,48 @@
 const express = require('express');
+const admin = require('firebase-admin');
+const mongoose = require('mongoose');
+const serviceAccount = require('/etc/secrets/serviceAccount.json');
+
 const app = express();
 app.use(express.json());
 
-const admin = require('firebase-admin');
-const serviceAccount = require('/etc/secrets/serviceAccount.json');
-
+// Initialize Firebase
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.error('MongoDB error:', err));
+
+// Database schemas
+const EventLog = mongoose.model('EventLog', new mongoose.Schema({
+  eventType: String,
+  receivedAt: { type: Date, default: Date.now },
+  raw: Object
+}));
+
+const User = mongoose.model('User', new mongoose.Schema({
+  accessToken: String,
+  refreshToken: String,
+  linkedAt: { type: Date, default: Date.now }
+}));
+
 // ── 1. ACCOUNT LINK URL ──
-// Ring sends users here to log in / create account
 app.get('/link', (req, res) => {
   const { redirect_uri, state } = req.query;
-
   if (!redirect_uri || !state) {
     return res.status(400).send('Missing redirect_uri or state');
   }
-
   const authCode = 'maidconnect_auth_' + Date.now();
   const redirectUrl = new URL(redirect_uri);
   redirectUrl.searchParams.set('code', authCode);
   redirectUrl.searchParams.set('state', state);
-
   res.redirect(redirectUrl.toString());
 });
 
 // ── 2. APP HOMEPAGE URL ──
-// Ring redirects here after linking is complete
 app.get('/config', (req, res) => {
   res.send(`
     <html>
@@ -42,27 +57,33 @@ app.get('/config', (req, res) => {
 });
 
 // ── 3. TOKEN EXCHANGE URL ──
-// Ring sends OAuth code here — exchange for access token
-app.post('/oauth/callback', (req, res) => {
+app.post('/oauth/callback', async (req, res) => {
   const { code, grant_type } = req.body;
   console.log('Token exchange requested. Code:', code);
 
-  // Return mock tokens (replace with real auth logic later)
+  const accessToken = 'mc_access_' + Date.now();
+  const refreshToken = 'mc_refresh_' + Date.now();
+
+  // Save user to database
+  await User.create({ accessToken, refreshToken });
+
   res.json({
-    access_token:  'mc_access_'  + Date.now(),
-    refresh_token: 'mc_refresh_' + Date.now(),
+    access_token:  accessToken,
+    refresh_token: refreshToken,
     token_type:    'Bearer',
     expires_in:    3600
   });
 });
 
 // ── 4. WEBHOOK URL ──
-// Ring sends doorbell / motion events here
 app.post('/webhook', async (req, res) => {
   const event = req.body;
   console.log('Ring event received:', JSON.stringify(event, null, 2));
 
   const eventType = event?.event?.type || 'unknown';
+
+  // Save event to database
+  await EventLog.create({ eventType, raw: event });
 
   if (eventType === 'doorbell.ring') {
     console.log('🔔 Maid is at the door!');
@@ -74,14 +95,13 @@ app.post('/webhook', async (req, res) => {
         },
         topic: 'maid-alerts'
       });
-      console.log('Push notification sent successfully');
     } catch (err) {
-      console.error('Failed to send notification:', err);
+      console.error('Notification error:', err);
     }
   }
 
   if (eventType === 'motion.detect') {
-    console.log('🚶 Motion detected — possible maid arrival.');
+    console.log('🚶 Motion detected!');
     try {
       await admin.messaging().send({
         notification: {
@@ -91,7 +111,7 @@ app.post('/webhook', async (req, res) => {
         topic: 'maid-alerts'
       });
     } catch (err) {
-      console.error('Failed to send notification:', err);
+      console.error('Notification error:', err);
     }
   }
 
@@ -101,35 +121,26 @@ app.post('/webhook', async (req, res) => {
 // ── HEALTH CHECK ──
 app.get('/', (req, res) => {
   res.json({
-    app:     'MaidConnect Ring Backend',
-    status:  'running',
+    app: 'MaidConnect Ring Backend',
+    status: 'running',
     version: '1.0.0',
-    endpoints: {
-      link:          '/link',
-      config:        '/config',
-      tokenExchange: '/oauth/callback',
-      webhook:       '/webhook'
-    }
+    db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
   });
 });
 
-const PORT = process.env.PORT || 3000;
-
-// Privacy Policy
+// ── STATIC PAGES ──
 app.get('/privacy', (req, res) => {
-  res.send('<h1>MaidConnect Privacy Policy</h1><p>We respect your privacy and protect all user data securely.</p>');
+  res.send('<h1>MaidConnect Privacy Policy</h1><p>We respect your privacy.</p>');
 });
-
-// Terms of Service
 app.get('/terms', (req, res) => {
   res.send('<h1>MaidConnect Terms of Service</h1><p>By using MaidConnect you agree to our terms.</p>');
 });
-
-// Support
 app.get('/support', (req, res) => {
-  res.send('<h1>MaidConnect Support</h1><p>Email us: support@maidconnect.com</p>');
+  res.send('<h1>MaidConnect Support</h1><p>Email: support@maidconnect.com</p>');
 });
 
+// ── START SERVER ──
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`MaidConnect Ring Backend running on port ${PORT}`);
 });
