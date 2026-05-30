@@ -1,10 +1,10 @@
 const express = require('express');
+const cors = require('cors');
 const admin = require('firebase-admin');
 const mongoose = require('mongoose');
 const serviceAccount = require('/etc/secrets/serviceAccount.json');
 
 const app = express();
-const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
@@ -103,14 +103,22 @@ app.post('/webhook', async (req, res) => {
 
 // ── GET EVENTS ──
 app.get('/events', async (req, res) => {
-  const events = await EventLog.find().sort({ receivedAt: -1 }).limit(50);
-  res.json(events);
+  try {
+    const events = await EventLog.find().sort({ receivedAt: -1 }).limit(50);
+    res.json(events);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ── GET USERS ──
 app.get('/users', async (req, res) => {
-  const users = await User.find().select('-accessToken -refreshToken');
-  res.json(users);
+  try {
+    const users = await User.find().select('-accessToken -refreshToken');
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ── HEALTH CHECK ──
