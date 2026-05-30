@@ -2,6 +2,13 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
+const admin = require('firebase-admin');
+const serviceAccount = require('/etc/secrets/serviceAccount.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
 // ── 1. ACCOUNT LINK URL ──
 // Ring sends users here to log in / create account
 app.get('/link', (req, res) => {
