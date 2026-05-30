@@ -3,7 +3,8 @@ const admin = require('firebase-admin');
 const mongoose = require('mongoose');
 const serviceAccount = require('/etc/secrets/serviceAccount.json');
 
-const app = express();const cors = require('cors');
+const app = express();
+const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
