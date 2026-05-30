@@ -76,7 +76,20 @@ app.get('/', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;// Privacy Policy
+app.get('/privacy', (req, res) => {
+  res.send('<h1>MaidConnect Privacy Policy</h1><p>We respect your privacy and protect all user data securely.</p>');
+});
+
+// Terms of Service
+app.get('/terms', (req, res) => {
+  res.send('<h1>MaidConnect Terms of Service</h1><p>By using MaidConnect you agree to our terms.</p>');
+});
+
+// Support
+app.get('/support', (req, res) => {
+  res.send('<h1>MaidConnect Support</h1><p>Email us: support@maidconnect.com</p>');
+});
 app.listen(PORT, () => {
   console.log(`MaidConnect Ring Backend running on port ${PORT}`);
 });
