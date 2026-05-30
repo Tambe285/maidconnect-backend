@@ -6,10 +6,17 @@ app.use(express.json());
 // Ring sends users here to log in / create account
 app.get('/link', (req, res) => {
   const { redirect_uri, state } = req.query;
-  // In production: show your login page here
-  // For now: redirect back with a test auth code
+
+  if (!redirect_uri || !state) {
+    return res.status(400).send('Missing redirect_uri or state');
+  }
+
   const authCode = 'maidconnect_auth_' + Date.now();
-  res.redirect(`${redirect_uri}?code=${authCode}&state=${state}`);
+  const redirectUrl = new URL(redirect_uri);
+  redirectUrl.searchParams.set('code', authCode);
+  redirectUrl.searchParams.set('state', state);
+
+  res.redirect(redirectUrl.toString());
 });
 
 // ── 2. APP HOMEPAGE URL ──
@@ -76,7 +83,9 @@ app.get('/', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;// Privacy Policy
+const PORT = process.env.PORT || 3000;
+
+// Privacy Policy
 app.get('/privacy', (req, res) => {
   res.send('<h1>MaidConnect Privacy Policy</h1><p>We respect your privacy and protect all user data securely.</p>');
 });
@@ -89,20 +98,8 @@ app.get('/terms', (req, res) => {
 // Support
 app.get('/support', (req, res) => {
   res.send('<h1>MaidConnect Support</h1><p>Email us: support@maidconnect.com</p>');
-});// Privacy Policy
-app.get('/privacy', (req, res) => {
-  res.send('<h1>MaidConnect Privacy Policy</h1><p>We respect your privacy and protect all user data securely.</p>');
 });
 
-// Terms of Service
-app.get('/terms', (req, res) => {
-  res.send('<h1>MaidConnect Terms of Service</h1><p>By using MaidConnect you agree to our terms.</p>');
-});
-
-// Support
-app.get('/support', (req, res) => {
-  res.send('<h1>MaidConnect Support</h1><p>Email: support@maidconnect.com</p>');
-});
 app.listen(PORT, () => {
   console.log(`MaidConnect Ring Backend running on port ${PORT}`);
 });
