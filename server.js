@@ -141,6 +141,16 @@ app.get('/support', (req, res) => {
 
 // ── START SERVER ──
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+// ── GET EVENTS ──
+app.get('/events', async (req, res) => {
+  const events = await EventLog.find().sort({ receivedAt: -1 }).limit(50);
+  res.json(events);
+});
+
+// ── GET USERS ──
+app.get('/users', async (req, res) => {
+  const users = await User.find().select('-accessToken -refreshToken');
+  res.json(users);
+}); app.listen(PORT, () => {
   console.log(`MaidConnect Ring Backend running on port ${PORT}`);
 });
