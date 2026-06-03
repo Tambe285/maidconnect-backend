@@ -59,4 +59,13 @@ router.post('/', async (req, res) => {
       }
     });
     
-  } catch (
+  } catch (error) {
+    console.error('Waitlist error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error. Please try again later.'
+    });
+  }
+});
+
+module.exports = router;
