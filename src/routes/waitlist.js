@@ -1,91 +1,62 @@
-
 const express = require('express');
-const router  = express.Router();
+const router = express.Router();
 const { query } = require('../db');
 
 router.post('/', async (req, res) => {
   try {
-    const { name, phone, role, city } = req.body;
-
-    if (!name || !phone || !role) {
+    const { name, phone, service, city } = req.body;
+    
+    // Validate required fields
+    if (!name || !phone || !service) {
       return res.status(400).json({
         success: false,
-        error: 'Name, phone, and role are required.'
+        error: 'Name, phone, and service are required.'
       });
     }
-
+    
+    // Clean phone number - remove non-digits and country code
     const cleanPhone = phone.replace(/\D/g, '').replace(/^91/, '');
+    
+    // Validate Indian phone number (10 digits starting with 6-9)
     if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
       return res.status(400).json({
         success: false,
         error: 'Enter a valid 10-digit Indian mobile number.'
       });
     }
-
-    if (!['employer', 'worker'].includes(role)) {
+    
+    // Check if phone already exists in database
+    const existingUser = await query(
+      'SELECT * FROM waitlist WHERE phone = $1',
+      [cleanPhone]
+    );
+    
+    if (existingUser.rows.length > 0) {
       return res.status(400).json({
         success: false,
-        error: 'Role must be employer or worker.'
+        error: 'This phone number is already registered.'
       });
     }
-
+    
+    // Insert new entry into database
     const result = await query(
-      `INSERT INTO waitlist (name, phone, role, city)
-       VALUES ($1, $2, $3, $4)
-       ON CONFLICT (phone)
-         DO UPDATE SET name = EXCLUDED.name, city = EXCLUDED.city
-       RETURNING id, name, phone, role, city, created_at`,
-      [name.trim(), cleanPhone, role, city || null]
+      `INSERT INTO waitlist (name, phone, service, city, created_at) 
+       VALUES ($1, $2, $3, $4, NOW()) 
+       RETURNING *`,
+      [name, cleanPhone, service, city || null]
     );
-
-    const entry = result.rows[0];
-    const posResult = await query(
-      `SELECT COUNT(*) as position FROM waitlist WHERE created_at <= $1`,
-      [entry.created_at]
-    );
-
-    return res.status(201).json({
+    
+    // Success response
+    res.status(201).json({
       success: true,
-      message: "You're on the waitlist! We'll notify you when we launch.",
+      message: 'Request submitted successfully!',
       data: {
-        name: entry.name,
-        role: entry.role,
-        position: parseInt(posResult.rows[0].position),
+        id: result.rows[0].id,
+        name: result.rows[0].name,
+        phone: result.rows[0].phone,
+        service: result.rows[0].service,
+        city: result.rows[0].city
       }
     });
-
-  } catch (err) {
-    console.error('[Waitlist] Error:', err.message);
-    return res.status(500).json({
-      success: false,
-      error: 'Something went wrong. Please try again.'
-    });
-  }
-});
-
-router.get('/stats', async (_req, res) => {
-  try {
-    const result = await query(`
-      SELECT
-        COUNT(*)                                      AS total,
-        COUNT(*) FILTER (WHERE role = 'employer')     AS employers,
-        COUNT(*) FILTER (WHERE role = 'worker')       AS workers,
-        COUNT(DISTINCT city) FILTER (WHERE city IS NOT NULL) AS cities
-      FROM waitlist
-    `);
-    const s = result.rows[0];
-    return res.json({
-      success: true,
-      data: {
-        total:     parseInt(s.total),
-        employers: parseInt(s.employers),
-        workers:   parseInt(s.workers),
-        cities:    parseInt(s.cities),
-      }
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: 'Could not fetch stats.' });
-  }
-});
-
-module.exports = router;
+    
+  } catch (
