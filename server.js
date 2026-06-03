@@ -1,72 +1,65 @@
 const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+const router = express.Router();
+const { query } = require('../db');
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Middleware
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  credentials: true
-}));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Routes
-const waitlistRouter = require('./routes/waitlist');
-app.use('/api/waitlist', waitlistRouter);
-
-// Health check endpoint
-app.get('/', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    message: 'MaidConnect API is running',
-    timestamp: new Date().toISOString()
-  });
+router.post('/', async (req, res) => {
+  try {
+    const { name, phone, service, city } = req.body;
+    
+    if (!name || !phone || !service) {
+      return res.status(400).json({
+        success: false,
+        error: 'Name, phone, and service are required.'
+      });
+    }
+    
+    const cleanPhone = phone.replace(/\D/g, '').replace(/^91/, '');
+    
+    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Enter a valid 10-digit Indian mobile number.'
+      });
+    }
+    
+    const existingUser = await query(
+      'SELECT * FROM waitlist WHERE phone = $1',
+      [cleanPhone]
+    );
+    
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'This phone number is already registered.'
+      });
+    }
+    
+    const result = await query(
+      `INSERT INTO waitlist (name, phone, service, city, created_at) 
+       VALUES ($1, $2, $3, $4, NOW()) 
+       RETURNING *`,
+      [name, cleanPhone, service, city || null]
+    );
+    
+    res.status(201).json({
+      success: true,
+      message: 'Request submitted successfully!',
+      data: {
+        id: result.rows[0].id,
+        name: result.rows[0].name,
+        phone: result.rows[0].phone,
+        service: result.rows[0].service,
+        city: result.rows[0].city
+      }
+    });
+    
+  } catch (error) {
+    console.error('Waitlist error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error. Please try again later.'
+    });
+  }
 });
 
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy',
-    uptime: process.uptime(),
-    timestamp: Date.now()
-  });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ 
-    success: false, 
-    error: 'Route not found' 
-  });
-});
-
-// Error handler
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({ 
-    success: false, 
-    error: 'Internal server error' 
-  });
-});
-
-// Start server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ MaidConnect API running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📍 Health check: http://localhost:${PORT}/health`);
-});
-
-// Handle uncaught exceptions
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
-});
-
-module.exports = app;
+module.exports = router;
