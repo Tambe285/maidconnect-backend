@@ -6,6 +6,7 @@ router.post('/', async (req, res) => {
   try {
     const { name, phone, service, city } = req.body;
     
+    // Validate required fields
     if (!name || !phone || !service) {
       return res.status(400).json({
         success: false,
@@ -13,8 +14,10 @@ router.post('/', async (req, res) => {
       });
     }
     
+    // Clean phone number - remove non-digits and country code
     const cleanPhone = phone.replace(/\D/g, '').replace(/^91/, '');
     
+    // Validate Indian phone number (10 digits starting with 6-9)
     if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
       return res.status(400).json({
         success: false,
@@ -22,6 +25,7 @@ router.post('/', async (req, res) => {
       });
     }
     
+    // Check if phone already exists in database
     const existingUser = await query(
       'SELECT * FROM waitlist WHERE phone = $1',
       [cleanPhone]
@@ -34,6 +38,7 @@ router.post('/', async (req, res) => {
       });
     }
     
+    // Insert new entry into database
     const result = await query(
       `INSERT INTO waitlist (name, phone, service, city, created_at) 
        VALUES ($1, $2, $3, $4, NOW()) 
@@ -41,6 +46,7 @@ router.post('/', async (req, res) => {
       [name, cleanPhone, service, city || null]
     );
     
+    // Success response
     res.status(201).json({
       success: true,
       message: 'Request submitted successfully!',
