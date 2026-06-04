@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files
+// Serve static files from 'public' and 'admin' folders
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
@@ -31,7 +31,7 @@ app.use('/api/promoters', require('./src/routes/promoters'));
 app.use('/api/workers', require('./src/routes/workers'));
 app.use('/api/admin', require('./src/routes/admin'));
 
-// Frontend Routes
+// Frontend Routes - THIS IS THE KEY PART
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -52,15 +52,7 @@ app.get('/worker-leaderboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'worker-leaderboard.html'));
 });
 
-app.get('/promoter-dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'promoter-dashboard.html'));
-});
-
-app.get('/worker-dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'worker-dashboard.html'));
-});
-
-// 404 handler
+// 404 handler for undefined routes
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
