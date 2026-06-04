@@ -1,24 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>MaidConnect - Live</title>
-    <style>
-        body { 
-            background: #111827; 
-            color: white; 
-            font-family: Arial; 
-            text-align: center; 
-            padding: 50px 20px;
-        }
-        h1 { color: #f97316; font-size: 48px; }
-        .success { color: #22c55e; font-size: 24px; margin: 20px 0; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaidConnect - Find Trusted Home Help</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>MaidConnect</h1>
-    <div class="success">✅ Server is Working!</div>
-    <p>Backend API: Online</p>
-    <p>Database: Connected to Supabase</p>
-    <p>Frontend: Successfully Serving Pages</p>
+<body class="bg-gray-900 text-white">
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+        <!-- Logo -->
+        <h1 class="text-5xl font-bold mb-2 text-orange-500">MaidConnect</h1>
+        
+        <!-- NEW LINK TO MAGAZINE -->
+        <a href="/manifesto" class="text-orange-400 hover:text-white underline mb-6 block text-sm transition">
+            📖 Read Our Manifesto & Profit Sharing Plan
+        </a>
+        
+        <p class="text-xl mb-8 text-gray-300">Find Trusted Maids, Cooks & Helpers</p>
+        
+        <!-- Waitlist Form -->
+        <div class="bg-gray-800 p-8 rounded-xl max-w-md w-full">
+            <h2 class="text-2xl font-bold mb-6">Join Waitlist</h2>
+            <form id="waitlistForm" class="space-y-4">
+                <input type="text" id="name" placeholder="Your Name" required 
+                    class="w-full p-3 rounded bg-gray-700 border border-gray-600 text-white">
+                <input type="tel" id="phone" placeholder="Phone Number" required 
+                    class="w-full p-3 rounded bg-gray-700 border border-gray-600 text-white">
+                <select id="service" required 
+                    class="w-full p-3 rounded bg-gray-700 border border-gray-600 text-white">
+                    <option value="">Select Service</option>
+                    <option value="Maid">Maid</option>
+                    <option value="Cook">Cook</option>
+                    <option value="Babysitter">Babysitter</option>
+                    <option value="Elderly Care">Elderly Care</option>
+                </select>
+                <input type="text" id="city" placeholder="City" required 
+                    class="w-full p-3 rounded bg-gray-700 border border-gray-600 text-white">
+                <button type="submit" 
+                    class="w-full bg-orange-500 hover:bg-orange-600 py-3 rounded font-bold">
+                    Join Waitlist
+                </button>
+            </form>
+            <div id="message" class="mt-4 text-center"></div>
+        </div>
+        
+        <!-- Footer Links -->
+        <div class="mt-8 flex gap-6 text-sm text-gray-400">
+            <a href="/manifesto" class="hover:text-white transition">Our Story</a>
+            <a href="/admin" class="hover:text-white transition">Admin Login</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('waitlistForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                service: document.getElementById('service').value,
+                city: document.getElementById('city').value
+            };
+            
+            try {
+                const res = await fetch('/api/waitlist', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                document.getElementById('message').textContent = result.message || 'Success!';
+                document.getElementById('message').className = 'mt-4 text-center text-green-400';
+            } catch (err) {
+                document.getElementById('message').textContent = 'Error: ' + err.message;
+                document.getElementById('message').className = 'mt-4 text-center text-red-400';
+            }
+        });
+    </script>
 </body>
 </html>
