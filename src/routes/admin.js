@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { query } = require('../db');
+const { query } = require('../db'); // Uses src/db.js
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// Login
+// Import the profit calculator we just created
+const { calculateMonthlyPromoterProfit, calculateYearlyWorkerProfit } = require('../utils/profitCalculator');
+
+// --- 1. LOGIN ---
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -16,21 +19,60 @@ router.post('/login', async (req, res) => {
     const valid = await bcrypt.compare(password, admin.password_hash);
     if (!valid) return res.status(401).json({ success: false, error: 'Invalid credentials' });
     
-    const token = jwt.sign({ adminId: admin.id, role: admin.role }, process.env.JWT_SECRET, { expiresIn: '8h' });
+    const token = jwt.sign({ adminId: admin.id, role: admin.role }, process.env.JWT_SECRET || 'secret', { expiresIn: '8h' });
     res.json({ success: true, token, admin: { name: admin.name, role: admin.role } });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// Dashboard (Protected)
+// --- 2. DASHBOARD STATS ---
 router.get('/dashboard', async (req, res) => {
   try {
-    // Simple stats
     const workers = await query('SELECT COUNT(*) FROM worker_profiles');
     const employers = await query('SELECT COUNT(*) FROM waitlist');
-    res.json({ success: true, stats: { workers: workers.rows[0].count, employers: employers.rows[0].count } });
+    const promoters = await query('SELECT COUNT(*) FROM promoters');
+    
+    res.json({ 
+      success: true, 
+      stats: { 
+        workers: workers.rows[0].count, 
+        employers: employers.rows[0].count,
+        promoters: promoters.rows[0].count
+      } 
+    });
   } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// --- 3. TRIGGER MONTHLY PROMOTER PROFIT ---
+// This is the magic button!
+router.post('/calculate-monthly-promoter-profit', async (req, res) => {
+  try {
+    // Example: trigger for June 2026
+    const { year = 2026, month = 6 } = req.body; 
+    console.log(`Admin triggered monthly profit calc for ${year}-${month}`);
+    
+    const result = await calculateMonthlyPromoterProfit(year, month);
+    res.json({ success: true, message: 'Promoter profit calculated successfully!', data: result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// --- 4. TRIGGER YEARLY WORKER PROFIT ---
+// The other magic button!
+router.post('/calculate-yearly-worker-profit', async (req, res) => {
+  try {
+    const { year = 2026 } = req.body;
+    console.log(`Admin triggered yearly profit calc for ${year}`);
+    
+    const result = await calculateYearlyWorkerProfit(year);
+    res.json({ success: true, message: 'Worker profit calculated successfully!', data: result });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
