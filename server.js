@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from 'public' and 'admin' folders
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
@@ -31,7 +31,7 @@ app.use('/api/promoters', require('./src/routes/promoters'));
 app.use('/api/workers', require('./src/routes/workers'));
 app.use('/api/admin', require('./src/routes/admin'));
 
-// Frontend Routes - THIS IS THE KEY PART
+// Frontend Routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -44,6 +44,11 @@ app.get('/admin/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin', 'dashboard.html'));
 });
 
+// NEW: Magazine/Manifesto Page Route
+app.get('/manifesto', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'magazine.html'));
+});
+
 app.get('/leaderboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'leaderboard.html'));
 });
@@ -52,7 +57,7 @@ app.get('/worker-leaderboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'worker-leaderboard.html'));
 });
 
-// 404 handler for undefined routes
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
