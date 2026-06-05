@@ -28,18 +28,18 @@
 </head>
 <body class="bg-brand-dark text-white font-sans">
 
-    <!-- NAVIGATION -->
+    <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 bg-brand-dark/90 backdrop-blur-md border-b border-white/10">
         <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-brand-orange rounded-full flex items-center justify-center font-serif text-xl font-bold">M</div>
                 <span class="font-serif text-2xl font-bold">MaidConnect</span>
             </div>
-            <a href="#waitlist" class="bg-brand-orange px-6 py-2 rounded-full font-bold hover:bg-orange-600 transition">Get Started</a>
+            <a href="/#waitlist" class="bg-brand-orange px-6 py-2 rounded-full font-bold hover:bg-orange-600 transition">Join Waitlist</a>
         </div>
     </nav>
 
-    <!-- HERO SECTION -->
+    <!-- Hero Section -->
     <section class="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20">
         <div class="max-w-5xl">
             <div class="inline-block border border-white/20 rounded-full px-6 py-2 mb-8">
@@ -55,8 +55,8 @@
             </p>
             
             <div class="flex flex-col md:flex-row gap-4 justify-center mb-16">
-                <a href="#waitlist" class="bg-brand-orange text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-600 transition">Hire a worker</a>
-                <a href="/worker-join" class="border border-white/20 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white/10 transition">I want to work</a>
+                <a href="/#waitlist" class="bg-brand-orange text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-600 transition">Hire a Worker</a>
+                <a href="/worker-dashboard" class="border border-white/20 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white/10 transition">Worker Login</a>
             </div>
             
             <!-- Stats -->
@@ -77,122 +77,30 @@
         </div>
     </section>
 
-    <!-- MANIFESTO SECTION -->
+    <!-- Quick Links Section -->
     <section class="py-24 px-6 bg-brand-light text-brand-dark">
-        <div class="max-w-3xl mx-auto text-center">
-            <span class="uppercase tracking-widest text-xs text-brand-orange mb-6 block font-bold">The Manifesto</span>
-            <h2 class="font-serif text-4xl md:text-5xl font-bold mb-8 leading-tight">
-                We believe trust is the work.
-            </h2>
-            <p class="text-lg leading-relaxed mb-6 text-gray-700">
-                Every Indian household runs on the labour of someone who is rarely named, rarely credited, and rarely paid on time.
-            </p>
-            <p class="text-lg leading-relaxed mb-8 text-gray-700">
-                MaidConnect exists to change all three — with verified identities, public reputations, and direct UPI payouts.
-            </p>
-            <div class="border-l-4 border-brand-orange pl-6 text-left mt-12">
-                <p class="font-serif italic text-2xl text-gray-900">
-                    "Dignity isn't a feature. It's the entire product."
-                </p>
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="font-serif text-4xl font-bold mb-12">Explore MaidConnect</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <a href="/manifesto" class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition block">
+                    <h3 class="font-serif text-2xl font-bold mb-3 text-brand-dark">Our Story</h3>
+                    <p class="text-gray-600">Read our manifesto and learn about our profit-sharing model</p>
+                </a>
+                <a href="/worker-dashboard" class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition block">
+                    <h3 class="font-serif text-2xl font-bold mb-3 text-brand-dark">Worker Dashboard</h3>
+                    <p class="text-gray-600">Track your progress and earnings</p>
+                </a>
+                <a href="/admin" class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition block">
+                    <h3 class="font-serif text-2xl font-bold mb-3 text-brand-dark">Admin Panel</h3>
+                    <p class="text-gray-600">Manage the platform</p>
+                </a>
             </div>
         </div>
     </section>
-    <!-- FEATURES -->
-    <section class="py-24 px-6 bg-brand-dark">
-        <div class="max-w-6xl mx-auto">
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-brand-light text-brand-dark p-8 rounded-2xl">
-                    <div class="w-12 h-12 bg-brand-orange rounded-full mb-6"></div>
-                    <h3 class="font-serif text-2xl font-bold mb-3">Aadhaar Verified</h3>
-                    <p class="text-gray-600">Every worker's identity is checked against Aadhaar before they're listed.</p>
-                </div>
-                <div class="bg-brand-light text-brand-dark p-8 rounded-2xl">
-                    <div class="w-12 h-12 bg-brand-orange rounded-full mb-6"></div>
-                    <h3 class="font-serif text-2xl font-bold mb-3">Public Ratings</h3>
-                    <p class="text-gray-600">Reputations earned in homes are now visible across the country.</p>
-                </div>
-                <div class="bg-brand-light text-brand-dark p-8 rounded-2xl">
-                    <div class="w-12 h-12 bg-brand-orange rounded-full mb-6"></div>
-                    <h3 class="font-serif text-2xl font-bold mb-3">UPI Payments</h3>
-                    <p class="text-gray-600">Money goes directly to the worker — not to a chain of middlemen.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- WAITLIST FORM -->
-    <section id="waitlist" class="py-24 px-6 bg-brand-dark border-t border-white/10">
-        <div class="max-w-md mx-auto">
-            <div class="text-center mb-8">
-                <span class="uppercase tracking-widest text-xs text-brand-orange mb-4 block">Be Among the First</span>
-                <h2 class="font-serif text-4xl md:text-5xl font-bold mb-4">Join the waitlist.</h2>
-                <p class="text-gray-400">We'll reach out as we open up your city.</p>
-            </div>
-            
-            <form id="waitlistForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs uppercase tracking-widest mb-2 text-gray-400">Name</label>
-                    <input type="text" id="name" placeholder="Your full name" required 
-                        class="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-brand-orange focus:outline-none transition">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-widest mb-2 text-gray-400">Phone</label>
-                    <input type="tel" id="phone" placeholder="10-digit mobile" required 
-                        class="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-brand-orange focus:outline-none transition">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-widest mb-2 text-gray-400">Email</label>
-                    <input type="email" id="email" placeholder="you@example.com" required 
-                        class="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-brand-orange focus:outline-none transition">
-                </div>
-                <div>                    <label class="block text-xs uppercase tracking-widest mb-2 text-gray-400">City</label>
-                    <input type="text" id="city" placeholder="Mumbai, Delhi, ..." required 
-                        class="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-brand-orange focus:outline-none transition">
-                </div>
-                <button type="submit" 
-                    class="w-full bg-brand-orange text-white py-4 rounded-xl font-bold text-lg hover:bg-orange-600 transition mt-6">
-                    Join the waitlist
-                </button>
-            </form>
-            <div id="message" class="mt-4 text-center"></div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
+    <!-- Footer -->
     <footer class="py-12 text-center text-sm text-gray-600 border-t border-white/10">
         <p>© 2026 MaidConnect. All rights reserved.</p>
-        <div class="mt-4 space-x-4">
-            <a href="/manifesto" class="text-brand-orange hover:underline">Our Story</a>
-            <a href="/admin" class="text-gray-500 hover:text-white">Admin</a>
-        </div>
     </footer>
 
-    <script>
-        document.getElementById('waitlistForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = {
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                service: 'Maid',
-                city: document.getElementById('city').value
-            };
-            
-            try {
-                const res = await fetch('/api/waitlist', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(data)
-                });
-                const result = await res.json();
-                const msgEl = document.getElementById('message');
-                msgEl.textContent = result.message || 'Welcome to MaidConnect! We will contact you soon.';
-                msgEl.className = 'mt-4 text-center text-green-400 font-bold';
-                document.getElementById('waitlistForm').reset();
-            } catch (err) {
-                const msgEl = document.getElementById('message');
-                msgEl.textContent = 'Error: ' + err.message;
-                msgEl.className = 'mt-4 text-center text-red-400';
-            }
-        });
-    </script></body>
+</body>
 </html>
