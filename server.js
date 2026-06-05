@@ -50,6 +50,11 @@ app.get('/manifesto', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'magazine.html'));
 });
 
+// Worker Dashboard Page
+app.get('/worker-dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'worker-dashboard.html'));
+});
+
 app.get('/leaderboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'leaderboard.html'));
 });
