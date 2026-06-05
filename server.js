@@ -1,23 +1,21 @@
-// 1. REQUIRE STATEMENTS FIRST
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-// 2. INITIALIZE EXPRESS
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// 3. MIDDLEWARE
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 4. SERVE STATIC FILES
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
-// 5. HEALTH CHECK
+// Health check
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
@@ -27,13 +25,13 @@ app.get('/health', (req, res) => {
   });
 });
 
-// 6. API ROUTES
+// API Routes
 app.use('/api/waitlist', require('./src/routes/waitlist'));
 app.use('/api/promoters', require('./src/routes/promoters'));
 app.use('/api/workers', require('./src/routes/workers'));
 app.use('/api/admin', require('./src/routes/admin'));
 
-// 7. FRONTEND ROUTES
+// Frontend Routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -50,7 +48,6 @@ app.get('/manifesto', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'magazine.html'));
 });
 
-// Worker Dashboard Page
 app.get('/worker-dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'worker-dashboard.html'));
 });
@@ -63,12 +60,12 @@ app.get('/worker-leaderboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'worker-leaderboard.html'));
 });
 
-// 8. 404 HANDLER
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// 9. ERROR HANDLER
+// Error handler
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(500).json({ 
@@ -77,11 +74,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 10. START SERVER
+// Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ MaidConnect API running on port ${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 Health check: http://localhost:${PORT}/health`);
 });
 
 module.exports = app;
