@@ -5,7 +5,7 @@ const { query } = require('../db');
 // POST: Add to waitlist / business signup
 router.post('/', async (req, res) => {
   try {
-    const { name, phone, service, email, business_name, plan, promoter_code } = req.body;
+    const { name, phone, service, email, business_name, plan, promoter_code, city } = req.body;
 
     // Validate required fields
     if (!name || !phone || !service) {
@@ -15,11 +15,11 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Insert into database
+    // Insert into database (city is optional, defaults to 'Not specified')
     await query(`
-      INSERT INTO waitlist (name, phone, service, email, business_name, plan, promoter_code)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-    `, [name, phone, service, email || null, business_name || null, plan || 'Starter', promoter_code || null]);
+      INSERT INTO waitlist (name, phone, service, email, business_name, plan, promoter_code, city)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    `, [name, phone, service, email || null, business_name || null, plan || 'Starter', promoter_code || null, city || 'Not specified']);
 
     res.json({ 
       success: true, 
@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
     console.error('Waitlist Error:', error);
     res.status(500).json({ 
       success: false, 
-      error: 'Internal server error. Please try again later.' 
+      error: error.message 
     });
   }
 });
