@@ -1,37 +1,70 @@
 const express = require('express');
 const router = express.Router();
-const { query } = require('../db'); // Ensure db.js exists in src folder
+const { query } = require('../db');
+const { 
+  logPromoterOnboarding, 
+  getPromoterMonthlyProgress, 
+  distributeMonthlyPool 
+} = require('../utils/promoterPoolCalculator');
 
-// GET Public Leaderboard
-router.get('/leaderboard', async (req, res) => {
+// 1. GET Dashboard Data
+router.get('/dashboard', async (req, res) => {
   try {
-    const leaders = await query('SELECT name, type, total_referrals FROM promoters ORDER BY total_referrals DESC LIMIT 50');
-    res.json({ success: true, leaderboard: leaders.rows });
+    // TODO: In real app, get promoterId from logged-in user session/token
+    // For now, we use a demo ID (1)
+    const promoterId = req.query.id || 1; 
+    
+    const progress = await getPromoterMonthlyProgress(promoterId);
+    res.json(progress);
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// POST Register Promoter
-router.post('/register', async (req, res) => {
+// 2. GET Earnings History
+router.get('/earnings-history', async (req, res) => {
   try {
-    const { name, email, phone, type } = req.body;
-    const promoter_code = 'MC' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    const promoterId = req.query.promoterId || 1;
     
-    await query(
-      'INSERT INTO promoters (name, email, phone, promoter_code, type) VALUES ($1, $2, $3, $4, $5)',
-      [name, email, phone, promoter_code, type || 'promoter']
-    );
+    const history = await query(`
+      SELECT month, year, businesses_onboarded, share_percentage, payout_amount, paid
+      FROM promoter_monthly_performance
+      WHERE promoter_id = $1
+      ORDER BY year DESC, month DESC
+      LIMIT 6
+    `, [promoterId]);
     
-    res.status(201).json({ success: true, message: 'Promoter registered', code: promoter_code });
+    res.json({ success: true, history: history.rows });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// PLACEHOLDER: Monthly Profit Calculation (We will add the real logic later)
-router.post('/calculate-monthly-profit', async (req, res) => {
-  res.json({ success: true, message: 'Monthly profit calculation logic goes here.' });
+// 3. POST Log a New Onboarding (Used by Business Signup flow)
+router.post('/onboard-business', async (req, res) => {
+  try {
+    const { promoterId, businessId, businessType, plan, revenue } = req.body;
+    
+    await logPromoterOnboarding(promoterId, businessId, businessType, plan, revenue);
+    
+    res.json({ 
+      success: true, 
+      message: 'Business successfully onboarded and credited to promoter!' 
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 4. POST Trigger Pool Distribution (Admin Only)
+router.post('/distribute-pool', async (req, res) => {
+  try {
+    const { month, year } = req.body;
+    const result = await distributeMonthlyPool(month, year);
+    res.json({ success: true, message: 'Pool distributed successfully', data: result });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 module.exports = router;
