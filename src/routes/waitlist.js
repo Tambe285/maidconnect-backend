@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET: Get all waitlist entries (Admin only)
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   try {
     const result = await query(`
       SELECT * FROM waitlist 
