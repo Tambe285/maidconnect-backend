@@ -1,1 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Dashboard - MaidConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { orange: '#F97316', dark: '#111111', light: '#F3F0EB' }
+                    },
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-dark text-white font-sans">
+    <nav class="bg-brand-dark/90 backdrop-blur-md border-b border-white/10 p-4">
+        <div class="flex justify-between items-center">
+            <span class="font-serif text-xl font-bold">Worker Dashboard</span>
+            <a href="/" class="text-sm text-gray-400">Logout</a>
+        </div>
+    </nav>
 
+    <div class="max-w-md mx-auto p-6 space-y-6">
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="font-serif text-3xl font-bold mb-2">Welcome, <span id="workerName">Worker</span>!</h1>
+            <p class="text-gray-400">Track your profit share progress</p>
+        </div>
+
+        <!-- ELIGIBILITY CARD -->
+        <div class="bg-gradient-to-br from-orange-900/40 to-brand-orange/20 border-2 border-brand-orange/40 p-6 rounded-2xl">
+            <h2 class="font-serif text-xl font-bold text-brand-orange mb-4">🎯 Annual Profit Share</h2>
+            
+            <!-- Jobs Progress -->
+            <div class="mb-4">
+                <div class="flex justify-between text-sm mb-1">
+                    <span>Jobs Completed</span>
+                    <span class="text-brand-orange font-bold" id="jobsCount">0/50</span>
+                </div>
+                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div id="jobsBar" class="h-full bg-brand-orange rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+            <!-- Rating Progress -->
+            <div class="mb-4">
+                <div class="flex justify-between text-sm mb-1">
+                    <span>Average Rating</span>
+                    <span class="text-green-400 font-bold" id="ratingValue">0.0★</span>
+                </div>
+                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div id="ratingBar" class="h-full bg-green-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div id="eligibilityStatus" class="bg-white/5 p-3 rounded-lg text-center text-sm text-gray-300">
+                Loading status...
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white/5 p-4 rounded-xl text-center">
+                <div class="text-2xl font-bold text-brand-orange" id="totalEarnings">₹0</div>
+                <div class="text-xs text-gray-400">Earnings (2026)</div>
+            </div>
+            <div class="bg-white/5 p-4 rounded-xl text-center">
+                <div class="text-2xl font-bold text-blue-400" id="avgRating">0.0</div>
+                <div class="text-xs text-gray-400">Rating</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadDashboard() {
+            try {
+                // Fetch data from your API
+                const res = await fetch('/api/workers/dashboard');
+                const data = await res.json();
+
+                // Update UI
+                document.getElementById('workerName').textContent = data.name || "Worker";
+                document.getElementById('totalEarnings').textContent = '₹' + (data.totalEarnings || 0).toLocaleString();
+                document.getElementById('avgRating').textContent = data.averageRating || "0.0";
+                document.getElementById('ratingValue').textContent = data.averageRating + "★";
+
+                // Calculate Jobs Progress
+                const jobsNeeded = 50;
+                const jobsDone = data.completedJobs || 0;
+                const jobsPercent = Math.min((jobsDone / jobsNeeded) * 100, 100);
+
+                document.getElementById('jobsCount').textContent = `${jobsDone}/${jobsNeeded}`;                document.getElementById('jobsBar').style.width = jobsPercent + '%';
+
+                // Calculate Rating Progress (Target 4.0)
+                const ratingTarget = 4.0;
+                const ratingScore = data.averageRating || 0;
+                const ratingPercent = Math.min((ratingScore / 5.0) * 100, 100);
+                document.getElementById('ratingBar').style.width = ratingPercent + '%';
+
+                // Determine Status
+                const statusEl = document.getElementById('eligibilityStatus');
+                if (jobsDone >= 50 && ratingScore >= 4.0) {
+                    statusEl.textContent = "✅ ELIGIBLE for Profit Share!";
+                    statusEl.classList.add('text-green-400', 'font-bold');
+                } else {
+                    const remaining = 50 - jobsDone;
+                    statusEl.textContent = ` Keep going! ${remaining} more jobs needed.`;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        loadDashboard();
+    </script>
+</body>
+</html>
