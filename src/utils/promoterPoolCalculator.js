@@ -1,21 +1,78 @@
 const { query } = require('../db');
 
 /**
- * Calculate and distribute promoter pool for a given month
- * Run this on the 5th of every month for the previous month
+ * 1. LOG A NEW BUSINESS ONBOARDING
+ * Call this when a promoter successfully signs up a business.
  */
-async function distributePromoterPool(month, year) {
+async function logPromoterOnboarding(promoterId, businessId, businessType, planName, subscriptionPrice) {
   try {
-    console.log(`🔄 Calculating promoter pool for ${month}/${year}`);
+    console.log(`📝 Logging onboarding: Promoter ${promoterId} -> ${businessType} on ${planName}`);
     
-    // 1. Get all promoter performance data using our SQL function
+    await query(`
+      INSERT INTO promoter_onboarding_log 
+      (promoter_id, business_id, business_type, plan_subscribed, subscription_revenue)
+      VALUES ($1, $2, $3, $4, $5)
+    `, [promoterId, businessId, businessType, planName, subscriptionPrice]);
+    
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error logging onboarding:', error);
+    throw error;
+  }
+}
+
+/**
+ * 2. GET PROMOTER MONTHLY PROGRESS
+ * Fetches data for the Promoter Dashboard.
+ */
+async function getPromoterMonthlyProgress(promoterId) {
+  try {
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1; 
+    const currentYear = now.getFullYear();
+    
+    // Count how many businesses this promoter onboarded THIS MONTH
+    const promoterStats = await query(`
+      SELECT COUNT(*) as count
+      FROM promoter_onboarding_log
+      WHERE promoter_id = $1 AND month = $2 AND year = $3
+    `, [promoterId, currentMonth, currentYear]);
+    
+    // Get TOTAL pool size (5% of ALL subscriptions this month)
+    const poolStats = await query(`
+      SELECT COALESCE(SUM(subscription_revenue), 0) * 0.05 as pool_size
+      FROM promoter_onboarding_log
+      WHERE month = $1 AND year = $2
+    `, [currentMonth, currentYear]);
+    
+    return {
+      success: true,
+      data: {        businessesOnboarded: parseInt(promoterStats.rows[0].count),
+        estimatedPool: parseFloat(poolStats.rows[0].pool_size),
+        currentMonth: currentMonth,
+        currentYear: currentYear
+      }
+    };
+  } catch (error) {
+    console.error(' Error getting progress:', error);
+    throw error;
+  }
+}
+
+/**
+ * 3. DISTRIBUTE MONTHLY POOL
+ * Admin function. Runs once a month to calculate final payouts.
+ */
+async function distributeMonthlyPool(month, year) {
+  try {
+    console.log(`🔄 Distributing pool for ${month}/${year}...`);
+    
+    // Run the SQL function we created in Step 1
     const results = await query(`
       SELECT * FROM calculate_promoter_pool_distribution($1, $2)
     `, [month, year]);
     
-    const totalPool = results.rows[0]?.total_pool || 0;
-    
-    // 2. Insert or update each promoter's monthly record
+    // Save results to the database table
     for (const row of results.rows) {
       await query(`
         INSERT INTO promoter_monthly_performance 
@@ -26,93 +83,24 @@ async function distributePromoterPool(month, year) {
           businesses_onboarded = EXCLUDED.businesses_onboarded,
           share_percentage = EXCLUDED.share_percentage,
           payout_amount = EXCLUDED.payout_amount,
-          total_pool_amount = EXCLUDED.total_pool_amount,
           updated_at = NOW()
       `, [
-        row.promoter_id,
-        month,
-        year,
-        row.businesses_onboarded,
-        row.share_percentage,
-        row.payout_amount,
-        row.total_pool
+        row.promoter_id, month, year, 
+        row.businesses_onboarded, row.share_percentage, 
+        row.payout_amount, row.total_pool
       ]);
     }
     
-    console.log(`✅ Pool distributed: ₹${totalPool} among ${results.rows.length} promoters`);
+    console.log(`✅ Distributed pool among ${results.rows.length} promoters.`);
+    return { success: true, details: results.rows };
     
-    return {
-      success: true,
-      totalPool,
-      totalPromoters: results.rows.length,
-      details: results.rows
-    };
-      } catch (error) {
-    console.error('❌ Error distributing promoter pool:', error);
-    throw error;
-  }
-}
-
-/**
- * Log a successful business onboarding by a promoter
- * Call this when a business completes subscription signup
- */
-async function logPromoterOnboarding(promoterId, businessId, businessType, plan, revenue) {
-  try {
-    await query(`
-      INSERT INTO promoter_onboarding_log 
-      (promoter_id, business_id, business_type, plan_subscribed, subscription_revenue)
-      VALUES ($1, $2, $3, $4, $5)
-    `, [promoterId, businessId, businessType, plan, revenue]);
-    
-    console.log(`📝 Logged onboarding: Promoter #${promoterId} → ${businessType} on ${plan}`);
-    return { success: true };
   } catch (error) {
-    console.error('❌ Error logging onboarding:', error);
-    throw error;
-  }
-}
-
-/**
- * Get promoter's current month progress (real-time dashboard)
- */
-async function getPromoterMonthlyProgress(promoterId) {
-  try {
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1; // JS months are 0-indexed
-    const currentYear = now.getFullYear();
-    
-    const progress = await query(`
-      SELECT 
-        COUNT(*) as businesses_onboarded,
-        COALESCE(SUM(subscription_revenue), 0) as total_revenue_generated
-      FROM promoter_onboarding_log
-      WHERE promoter_id = $1 AND month = $2 AND year = $3
-    `, [promoterId, currentMonth, currentYear]);
-    
-    // Get total pool estimate (5% of total revenue this month)
-    const poolEstimate = await query(`
-      SELECT COALESCE(SUM(subscription_revenue), 0) * 0.05 as estimated_pool
-      FROM promoter_onboarding_log
-      WHERE month = $1 AND year = $2
-    `, [currentMonth, currentYear]);
-        return {
-      success: true,
-      currentMonth,
-      currentYear,
-      businessesOnboarded: parseInt(progress.rows[0].businesses_onboarded),
-      revenueGenerated: parseFloat(progress.rows[0].total_revenue_generated),
-      estimatedPool: parseFloat(poolEstimate.rows[0].estimated_pool),
-      message: `You've onboarded ${progress.rows[0].businesses_onboarded} businesses this month!`
-    };
-  } catch (error) {
-    console.error('❌ Error getting promoter progress:', error);
-    throw error;
-  }
+    console.error('❌ Error distributing pool:', error);
+    throw error;  }
 }
 
 module.exports = {
-  distributePromoterPool,
   logPromoterOnboarding,
-  getPromoterMonthlyProgress
+  getPromoterMonthlyProgress,
+  distributeMonthlyPool
 };
