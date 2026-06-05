@@ -40,17 +40,17 @@ async function connectDB() {
 async function initializeSchema() {
   const schema = `
     CREATE TABLE IF NOT EXISTS waitlist (
-  id             SERIAL PRIMARY KEY,
-  name           VARCHAR(100)  NOT NULL,
-  phone          VARCHAR(15)   NOT NULL,
-  service        VARCHAR(50),
-  email          VARCHAR(255),
-  business_name  VARCHAR(255),
-  plan           VARCHAR(50)   DEFAULT 'Starter',
-  promoter_code  VARCHAR(100),
-  city           VARCHAR(100)  DEFAULT 'Not specified',
-  created_at     TIMESTAMPTZ   NOT NULL DEFAULT NOW()
-);
+      id             SERIAL PRIMARY KEY,
+      name           VARCHAR(100)  NOT NULL,
+      phone          VARCHAR(15)   NOT NULL,
+      service        VARCHAR(50),
+      email          VARCHAR(255),
+      business_name  VARCHAR(255),
+      plan           VARCHAR(50)   DEFAULT 'Starter',
+      promoter_code  VARCHAR(100),
+      city           VARCHAR(100)  DEFAULT 'Not specified',
+      created_at     TIMESTAMPTZ   NOT NULL DEFAULT NOW()
+    );
 
     CREATE TABLE IF NOT EXISTS employers (
       id            SERIAL PRIMARY KEY,
