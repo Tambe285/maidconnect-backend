@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { query } = require('../db'); // Uses src/db.js
+const { query } = require('../db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// Import the profit calculator we just created
-const { calculateMonthlyPromoterProfit, calculateYearlyWorkerProfit } = require('../utils/profitCalculator');
+// TEMPORARILY DISABLED - Profit calculator will be added later
+// const { calculateMonthlyPromoterProfit, calculateYearlyWorkerProfit } = require('../utils/profitCalculator');
 
 // --- 1. LOGIN ---
 router.post('/login', async (req, res) => {
@@ -46,33 +46,53 @@ router.get('/dashboard', async (req, res) => {
   }
 });
 
-// --- 3. TRIGGER MONTHLY PROMOTER PROFIT ---
-// This is the magic button!
-router.post('/calculate-monthly-promoter-profit', async (req, res) => {
+// --- 3. PROFIT STATS (Simple version) ---
+router.get('/profit-stats', async (req, res) => {
   try {
-    // Example: trigger for June 2026
-    const { year = 2026, month = 6 } = req.body; 
-    console.log(`Admin triggered monthly profit calc for ${year}-${month}`);
-    
-    const result = await calculateMonthlyPromoterProfit(year, month);
-    res.json({ success: true, message: 'Promoter profit calculated successfully!', data: result });
+    res.json({
+      success: true,
+      message: 'Profit sharing system coming soon',
+      pendingPromoterPayouts: 0,
+      pendingWorkerPayouts: 0
+    });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// --- 4. TRIGGER YEARLY WORKER PROFIT ---
-// The other magic button!
+// --- 4. PLACEHOLDER ROUTES FOR PROFIT CALCULATION ---
+// These will be enabled once profitCalculator.js is properly set up
+
+router.post('/calculate-monthly-promoter-profit', async (req, res) => {
+  try {
+    // TEMPORARY PLACEHOLDER
+    res.json({ 
+      success: true, 
+      message: 'Monthly promoter profit calculation will be available soon',
+      data: {
+        totalRevenue: 0,
+        promoterPool: 0,
+        totalPromoters: 0
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 router.post('/calculate-yearly-worker-profit', async (req, res) => {
   try {
-    const { year = 2026 } = req.body;
-    console.log(`Admin triggered yearly profit calc for ${year}`);
-    
-    const result = await calculateYearlyWorkerProfit(year);
-    res.json({ success: true, message: 'Worker profit calculated successfully!', data: result });
+    // TEMPORARY PLACEHOLDER
+    res.json({ 
+      success: true, 
+      message: 'Yearly worker profit calculation will be available soon',
+      data: {
+        totalProfit: 0,
+        workerPool: 0,
+        totalWorkers: 0
+      }
+    });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
