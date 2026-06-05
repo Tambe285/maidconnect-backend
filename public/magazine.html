@@ -1,187 +1,121 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaidConnect - The Manifesto</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for Magazine Look -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            orange: '#F97316',
-                            dark: '#111111',
-                            light: '#F3F0EB' // Cream/Paper color
-                        }
-                    },
-                    fontFamily: {
-                        serif: ['Playfair Display', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Smooth Scrolling */
-        html { scroll-behavior: smooth; }
-        /* Fade In Animation */
-        .fade-in { animation: fadeIn 1.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
-</head>
-<body class="bg-brand-dark text-brand-light font-sans antialiased">
-
-    <!-- NAVIGATION -->
-    <nav class="fixed top-0 w-full z-50 bg-brand-dark/90 backdrop-blur-md border-b border-white/10">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="font-serif text-2xl font-bold text-brand-orange tracking-tighter">MaidConnect.</a>
-            <a href="/#waitlist" class="bg-brand-orange text-white px-5 py-2 rounded-full text-sm font-bold hover:bg-orange-600 transition">Join Waitlist</a>
+<!-- PAYMENT TRANSPARENCY -->
+<section class="py-24 px-6 bg-brand-dark border-b border-white/10">
+    <div class="max-w-4xl mx-auto">
+        <span class="uppercase tracking-widest text-xs text-brand-orange mb-4 block font-bold">Our Promise</span>
+        <h2 class="font-serif text-4xl md:text-5xl font-bold mb-12 text-center">95% Goes to Workers. Always.</h2>
+        
+        <!-- Visual Breakdown -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <!-- Worker Side -->
+            <div class="bg-gradient-to-br from-green-900/30 to-green-800/20 border-2 border-green-500/30 p-8 rounded-2xl">
+                <div class="text-6xl font-bold text-green-400 mb-2">95%</div>
+                <h3 class="font-serif text-2xl font-bold text-white mb-4">To Workers</h3>
+                <ul class="space-y-3 text-gray-300">
+                    <li class="flex items-start">
+                        <span class="text-green-400 mr-2">✓</span>
+                        <span>Direct UPI payment to worker's account</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-400 mr-2">✓</span>
+                        <span>No middlemen, no agents</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-400 mr-2">✓</span>
+                        <span>Instant payment after job completion</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-400 mr-2">✓</span>
+                        <span>Full transparency - worker sees exact amount</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Platform Side -->
+            <div class="bg-gradient-to-br from-orange-900/30 to-orange-800/20 border-2 border-brand-orange/30 p-8 rounded-2xl">
+                <div class="text-6xl font-bold text-brand-orange mb-2">5%</div>
+                <h3 class="font-serif text-2xl font-bold text-white mb-4">Platform Fee</h3>
+                <ul class="space-y-3 text-gray-300">
+                    <li class="flex items-start">
+                        <span class="text-brand-orange mr-2">•</span>
+                        <span>App development & maintenance</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-brand-orange mr-2">•</span>
+                        <span>Aadhaar verification costs</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-brand-orange mr-2">•</span>
+                        <span>Customer support</span>
+                    </li>
+                    <li class="flex items-start">                        <span class="text-brand-orange mr-2">•</span>
+                        <span>Profit-sharing pools for top performers</span>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </nav>
-
-    <!-- HERO SECTION -->
-    <header class="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20">        <div class="fade-in max-w-4xl">
-            <span class="uppercase tracking-widest text-xs text-brand-orange mb-4 block">Launching Across 6 States</span>
-            <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl font-bold leading-tight mb-8">
-                Domestic help,<br>
-                <span class="text-brand-orange italic">re-imagined</span> for India.
-            </h1>
-            <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-                Aadhaar-verified workers. Transparent ratings. UPI payments straight to the person who did the work.
+        
+        <!-- Real Example -->
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-8">
+            <h3 class="font-serif text-xl font-bold mb-6 text-center">Real Example: ₹1,000 Job</h3>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white mb-2">₹1,000</div>
+                    <div class="text-sm text-gray-400">Employer Pays</div>
+                </div>
+                <div class="text-brand-orange text-2xl">→</div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-400 mb-2">₹950</div>
+                    <div class="text-sm text-gray-400">Worker Receives</div>
+                </div>
+                <div class="text-brand-orange text-2xl">+</div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-brand-orange mb-2">₹50</div>
+                    <div class="text-sm text-gray-400">Platform Fee</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comparison Table -->
+        <div class="mt-12">
+            <h3 class="font-serif text-2xl font-bold mb-6 text-center">Why We're Different</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-white/10">
+                            <th class="pb-4 text-gray-400">Platform</th>
+                            <th class="pb-4 text-green-400">Worker Gets</th>
+                            <th class="pb-4 text-brand-orange">Platform Takes</th>
+                            <th class="pb-4 text-gray-400">Payment Speed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-white/5">
+                            <td class="py-4 text-gray-300">Traditional Agencies</td>
+                            <td class="py-4 text-gray-500">60-70%</td>
+                            <td class="py-4 text-red-400">30-40%</td>
+                            <td class="py-4 text-gray-500">2-4 weeks</td>
+                        </tr>
+                        <tr class="border-b border-white/5">
+                            <td class="py-4 text-gray-300">Gig Apps</td>                            <td class="py-4 text-gray-500">70-80%</td>
+                            <td class="py-4 text-orange-400">20-30%</td>
+                            <td class="py-4 text-gray-500">1 week</td>
+                        </tr>
+                        <tr class="bg-brand-orange/10">
+                            <td class="py-4 text-brand-orange font-bold">MaidConnect</td>
+                            <td class="py-4 text-green-400 font-bold">95%</td>
+                            <td class="py-4 text-brand-orange font-bold">5%</td>
+                            <td class="py-4 text-green-400">Instant (UPI)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Quote -->
+        <div class="mt-12 text-center">
+            <p class="font-serif italic text-xl text-gray-400">
+                "We don't profit from workers. We profit from making workers' lives better."
             </p>
-            <div class="flex flex-col md:flex-row gap-4 justify-center">
-                <a href="/#waitlist" class="bg-brand-orange text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-600 transition">Hire a Worker</a>
-                <a href="/worker-join" class="border border-white/20 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white/10 transition">I Want to Work</a>
-            </div>
         </div>
-    </header>
-
-    <!-- THE MANIFESTO -->
-    <section class="py-24 px-6 bg-brand-light text-brand-dark">
-        <div class="max-w-3xl mx-auto text-center">
-            <span class="uppercase tracking-widest text-xs text-brand-orange mb-6 block font-bold">The Manifesto</span>
-            <h2 class="font-serif text-4xl md:text-5xl font-bold mb-8 leading-tight">
-                "We believe trust is the work."
-            </h2>
-            <p class="text-lg leading-relaxed mb-8 text-gray-700">
-                Every Indian household runs on the labour of someone who is rarely named, rarely credited, and rarely paid on time.
-            </p>
-            <p class="text-lg leading-relaxed text-gray-700">
-                MaidConnect exists to change all three — with verified identities, public reputations, and direct UPI payouts.
-            </p>
-            <div class="mt-12 border-l-4 border-brand-orange pl-6 text-left">
-                <p class="font-serif italic text-2xl text-gray-900">
-                    "Dignity isn't a feature. It's the entire product."
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- FEATURES -->
-    <section class="py-24 px-6 bg-brand-dark">
-        <div class="max-w-6xl mx-auto">
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Card 1 -->
-                <div class="bg-brand-light text-brand-dark p-8 rounded-2xl">
-                    <div class="w-12 h-12 bg-brand-orange rounded-full mb-6"></div>
-                    <h3 class="font-serif text-2xl font-bold mb-3">Aadhaar Verified</h3>
-                    <p class="text-gray-600">Every worker's identity is checked against Aadhaar before they're listed. Safety first.</p>
-                </div>
-                <!-- Card 2 -->
-                <div class="bg-brand-light text-brand-dark p-8 rounded-2xl">
-                    <div class="w-12 h-12 bg-brand-orange rounded-full mb-6"></div>                    <h3 class="font-serif text-2xl font-bold mb-3">Public Ratings</h3>
-                    <p class="text-gray-600">Reputations earned in homes are now visible across the country. Good work pays off.</p>
-                </div>
-                <!-- Card 3 -->
-                <div class="bg-brand-light text-brand-dark p-8 rounded-2xl">
-                    <div class="w-12 h-12 bg-brand-orange rounded-full mb-6"></div>
-                    <h3 class="font-serif text-2xl font-bold mb-3">UPI Payments</h3>
-                    <p class="text-gray-600">Money goes directly to the worker — not to a chain of middlemen. 95% of revenue goes to them.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- PROFIT SHARING DETAILS -->
-    <section class="py-24 px-6 bg-brand-light text-brand-dark border-y border-gray-200">
-        <div class="max-w-4xl mx-auto">
-            <span class="uppercase tracking-widest text-xs text-brand-orange mb-4 block font-bold">Our Plan</span>
-            <h2 class="font-serif text-4xl md:text-5xl font-bold mb-12 text-center">Profit Sharing: We Grow Together</h2>
-
-            <!-- Worker Sharing -->
-            <div class="mb-16">
-                <h3 class="font-serif text-3xl font-bold mb-4 border-b border-gray-300 pb-2">For Workers</h3>
-                <div class="grid md:grid-cols-2 gap-8 mt-6">
-                    <div>
-                        <h4 class="font-bold text-xl mb-2">The Annual Bonus Pool</h4>
-                        <p class="text-gray-600 leading-relaxed">
-                            Every year, <strong>5% of the platform's total annual profit</strong> is set aside specifically for our workers. This is distributed among the Top 100 workers based on performance.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-xl mb-2">How You Rank</h4>
-                        <p class="text-gray-600 leading-relaxed">
-                            Rankings are calculated using our <strong>Performance Score</strong>:<br>
-                            • Star Ratings (20%)<br>
-                            • Reliability Score (30%)<br>
-                            • Job Completion Rate (20%)<br>
-                            • Volume of Work (10%)<br>
-                            • Earnings Volume (20%)
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Promoter Sharing -->
-            <div>
-                <h3 class="font-serif text-3xl font-bold mb-4 border-b border-gray-300 pb-2">For Promoters</h3>
-                <div class="grid md:grid-cols-2 gap-8 mt-6">
-                    <div>
-                        <h4 class="font-bold text-xl mb-2">Monthly Payouts</h4>
-                        <p class="text-gray-600 leading-relaxed">                            We allocate <strong>5% of monthly revenue</strong> to promoters. Payouts are calculated at the end of every month and distributed based on contribution scores.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-xl mb-2">Contribution Score</h4>
-                        <p class="text-gray-600 leading-relaxed">
-                            Your share depends on your impact:<br>
-                            • 1 Point per Waitlist Referral<br>
-                            • 3 Points per Worker Onboarded<br>
-                            • 2 Points per Employer Onboarded<br>
-                            Higher score = Higher share of the 5% pool.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- TERMS & CONDITIONS -->
-    <section class="py-24 px-6 bg-brand-dark text-gray-400">
-        <div class="max-w-3xl mx-auto">
-            <h2 class="font-serif text-3xl text-white font-bold mb-8">Terms & Conditions</h2>
-            <div class="space-y-6 text-sm leading-relaxed">
-                <p><strong class="text-white">1. Verification:</strong> All workers must undergo Aadhaar verification and background checks before becoming eligible for the platform.</p>
-                <p><strong class="text-white">2. Direct Payments:</strong> MaidConnect guarantees 95% of service fees go directly to the worker via UPI. We retain only 5% for platform maintenance and profit pools.</p>
-                <p><strong class="text-white">3. Profit Eligibility:</strong> To be eligible for the Annual Worker Profit Share, a worker must have completed at least 50 jobs in the calendar year and maintained a rating of 4.0 stars or higher.</p>
-                <p><strong class="text-white">4. Promoter Payouts:</strong> Promoter payouts are processed on the 1st of every month. Minimum payout threshold is ₹500.</p>
-                <p><strong class="text-white">5. Dispute Resolution:</strong> All disputes regarding payments or service quality must be raised within 48 hours of job completion via the app. The Admin's decision is final.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="py-12 text-center text-sm text-gray-600 border-t border-white/10">
-        <p>© 2026 MaidConnect. All rights reserved.</p>
-        <a href="/" class="text-brand-orange hover:underline mt-4 inline-block">Back to Home</a>
-    </footer>
-
-</body>
-</html>
+    </div>
+</section>
