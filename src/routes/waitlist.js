@@ -2,69 +2,50 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
 
+// POST: Add to waitlist / business signup
 router.post('/', async (req, res) => {
   try {
-    const { name, phone, service, city } = req.body;
-    
+    const { name, phone, service, email, business_name, plan, promoter_code } = req.body;
+
     // Validate required fields
     if (!name || !phone || !service) {
-      return res.status(400).json({
-        success: false,
-        error: 'Name, phone, and service are required.'
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Name, phone, and service are required.' 
       });
     }
-    
-    // Clean phone number - remove non-digits and country code
-    const cleanPhone = phone.replace(/\D/g, '').replace(/^91/, '');
-    
-    // Validate Indian phone number (10 digits starting with 6-9)
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Enter a valid 10-digit Indian mobile number.'
-      });
-    }
-    
-    // Check if phone already exists in database
-    const existingUser = await query(
-      'SELECT * FROM waitlist WHERE phone = $1',
-      [cleanPhone]
-    );
-    
-    if (existingUser.rows.length > 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'This phone number is already registered.'
-      });
-    }
-    
-    // Insert new entry into database
-    const result = await query(
-      `INSERT INTO waitlist (name, phone, service, city, created_at) 
-       VALUES ($1, $2, $3, $4, NOW()) 
-       RETURNING *`,
-      [name, cleanPhone, service, city || null]
-    );
-    
-    // Success response
-    res.status(201).json({
-      success: true,
-      message: 'Request submitted successfully!',
-      data: {
-        id: result.rows[0].id,
-        name: result.rows[0].name,
-        phone: result.rows[0].phone,
-        service: result.rows[0].service,
-        city: result.rows[0].city
-      }
+
+    // Insert into database
+    await query(`
+      INSERT INTO waitlist (name, phone, service, email, business_name, plan, promoter_code)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `, [name, phone, service, email || null, business_name || null, plan || 'Starter', promoter_code || null]);
+
+    res.json({ 
+      success: true, 
+      message: 'Application submitted successfully!' 
     });
-    
+
   } catch (error) {
-    console.error('Waitlist error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error. Please try again later.'
+    console.error('Waitlist Error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Internal server error. Please try again later.' 
     });
+  }
+});
+
+// GET: Get all waitlist entries (Admin only)
+router.get('/', async (req, res) => {
+  try {
+    const result = await query(`
+      SELECT * FROM waitlist 
+      ORDER BY created_at DESC
+    `);
+    
+    res.json({ success: true, entries: result.rows });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
