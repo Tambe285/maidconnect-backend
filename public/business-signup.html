@@ -49,8 +49,8 @@
                     <option value="Restaurant" class="bg-brand-dark">🍽️ Restaurant</option>
                     <option value="Hotel" class="bg-brand-dark">🏨 Hotel</option>                    <option value="Mall" class="bg-brand-dark">🛍️ Mall</option>
                     <option value="Showroom" class="bg-brand-dark">✨ Showroom</option>
-                    <option value="Company" class="bg-brand-dark"> Company</option>
-                    <option value="Household" class="bg-brand-dark"> Household</option>
+                    <option value="Company" class="bg-brand-dark">🏢 Company</option>
+                    <option value="Household" class="bg-brand-dark">🏠 Household</option>
                 </select>
             </div>
 
@@ -107,11 +107,11 @@
             btn.disabled = true;
 
             const data = {
-                business_name: document.getElementById('businessName').value,
-                business_type: document.getElementById('businessType').value,
-                contact_name: document.getElementById('contactName').value,
-                email: document.getElementById('email').value,
+                name: document.getElementById('contactName').value,
                 phone: document.getElementById('phone').value,
+                service: document.getElementById('businessType').value,
+                email: document.getElementById('email').value,
+                business_name: document.getElementById('businessName').value,
                 plan: plan,
                 promoter_code: document.getElementById('promoterCode').value || null
             };
