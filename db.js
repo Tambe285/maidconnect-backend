@@ -7,8 +7,8 @@ const pool = new Pool({
   }
 });
 
-const query = (text, params) => pool.query(text, params);
-
-module.exports = {
-  query
+const query = async (text, params) => {
+  return await pool.query(text, params);
 };
+
+module.exports = { query };
