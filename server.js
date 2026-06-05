@@ -27,7 +27,7 @@ app.get('/health', (req, res) => {
 
 // 3. API ROUTES (Backend Logic)
 app.use('/api/waitlist', require('./src/routes/waitlist'));
-app.use('/api/promoters', require('./src/routes/promoters')); // NEW PROMOTER ROUTES
+app.use('/api/promoters', require('./src/routes/promoters'));
 app.use('/api/workers', require('./src/routes/workers'));
 app.use('/api/admin', require('./src/routes/admin'));
 
@@ -52,9 +52,12 @@ app.get('/worker-dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'worker-dashboard.html'));
 });
 
-// NEW PROMOTER DASHBOARD PAGE
 app.get('/promoter-dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'promoter-dashboard.html'));
+});
+
+app.get('/business-plans', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'business-plans.html'));
 });
 
 app.get('/leaderboard', (req, res) => {
