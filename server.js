@@ -11,11 +11,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files
+// Serve static files from 'public' and 'admin' folders
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
-// Health check
+// Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
@@ -57,7 +57,7 @@ app.get('/worker-leaderboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'worker-leaderboard.html'));
 });
 
-// 404 handler
+// 404 handler for undefined routes
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
