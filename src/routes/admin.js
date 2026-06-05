@@ -80,7 +80,7 @@ router.post('/calculate-monthly-promoter-profit', async (req, res) => {
   }
 });
 
-router.post('/calculate-yearly-worker-profit', async (req, res) => {
+router.post('/calculate-yearly-worker-profit', async (_req, res) => {
   try {
     // TEMPORARY PLACEHOLDER
     res.json({ 
