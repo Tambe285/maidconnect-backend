@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promoter Dashboard - MaidConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { orange: '#F97316', dark: '#111111', light: '#F3F0EB' }
+                    },
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-dark text-white font-sans">
+    <!-- Navigation -->
+    <nav class="bg-brand-dark/90 backdrop-blur-md border-b border-white/10 p-4 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <span class="font-serif text-xl font-bold">Promoter Dashboard</span>
+            <a href="/" class="text-sm text-gray-400 hover:text-white">← Back to Home</a>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto p-6 space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="font-serif text-3xl font-bold mb-2">Welcome, <span id="promoterName">Promoter</span>!</h1>
+            <p class="text-gray-400">Track your monthly onboarding progress</p>
+        </div>
+
+        <!-- MONTHLY PROGRESS CARD -->
+        <div class="bg-gradient-to-br from-orange-900/40 to-brand-orange/20 border-2 border-brand-orange/40 p-8 rounded-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="font-serif text-2xl font-bold text-brand-orange">📊 This Month's Progress</h2>
+                <span class="text-sm text-gray-400" id="currentMonth">June 2026</span>
+            </div>
+            
+            <!-- Onboarding Counter -->
+            <div class="text-center mb-8">
+                <div class="text-6xl font-bold text-brand-orange mb-2" id="onboardedCount">0</div>
+                <div class="text-lg text-gray-300">Businesses Onboarded</div>
+                <p class="text-sm text-gray-400 mt-2">More onboarding = Bigger share of the 5% pool!</p>
+            </div>
+            <!-- Pool Info -->
+            <div class="bg-white/5 rounded-xl p-4 mb-6">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-300">Estimated Pool Size</span>
+                    <span class="text-xl font-bold text-green-400" id="poolAmount">₹0</span>
+                </div>
+                <p class="text-xs text-gray-400 mt-1">5% of all subscription revenue this month</p>
+            </div>
+
+            <!-- Your Potential Share -->
+            <div class="bg-white/5 rounded-xl p-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-300">Your Potential Share</span>
+                    <span class="text-xl font-bold text-brand-orange" id="potentialShare">₹0</span>
+                </div>
+                <p class="text-xs text-gray-400 mt-1">Based on your % of total onboardings</p>
+            </div>
+
+            <!-- Status Message -->
+            <div id="statusMessage" class="mt-6 text-center text-sm text-gray-300">
+                Start onboarding businesses to earn your share!
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="bg-brand-light/5 border border-white/10 rounded-2xl p-6">
+            <h3 class="font-serif text-xl font-bold mb-4">💡 How Promoter Earnings Work</h3>
+            <ul class="space-y-3 text-gray-300 text-sm">
+                <li class="flex items-start">
+                    <span class="text-brand-orange mr-2 font-bold">1.</span>
+                    <span>Every month, 5% of subscription revenue goes into the Promoter Pool</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-brand-orange mr-2 font-bold">2.</span>
+                    <span>Your share = (Your onboarded businesses ÷ Total all promoters' onboarded)</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-brand-orange mr-2 font-bold">3.</span>
+                    <span>More businesses you onboard = bigger % of the pool</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-brand-orange mr-2 font-bold">4.</span>
+                    <span>Payouts happen on the 5th of next month</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-brand-orange mr-2 font-bold">5.</span>
+                    <span>Every 1st of the month, counters reset to ZERO - fresh start!</span>
+                </li>
+            </ul>        </div>
+
+        <!-- Business Types You Can Onboard -->
+        <div class="bg-brand-light/5 border border-white/10 rounded-2xl p-6">
+            <h3 class="font-serif text-xl font-bold mb-4">🏢 Business Types to Onboard</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="bg-white/5 p-3 rounded-lg text-center text-sm">🏪 Shops</div>
+                <div class="bg-white/5 p-3 rounded-lg text-center text-sm">🍽️ Restaurants</div>
+                <div class="bg-white/5 p-3 rounded-lg text-center text-sm">🏨 Hotels</div>
+                <div class="bg-white/5 p-3 rounded-lg text-center text-sm">🏢 Companies</div>
+                <div class="bg-white/5 p-3 rounded-lg text-center text-sm">🏠 Households</div>
+                <div class="bg-white/5 p-3 rounded-lg text-center text-sm">🛍️ Malls</div>
+                <div class="bg-white/5 p-3 rounded-lg text-center text-sm">✨ Showrooms</div>
+            </div>
+        </div>
+
+        <!-- Earnings History -->
+        <div class="bg-brand-light/5 border border-white/10 rounded-2xl p-6">
+            <h3 class="font-serif text-xl font-bold mb-4">📈 Recent Earnings History</h3>
+            <div id="earningsHistory" class="space-y-2">
+                <div class="text-gray-400 text-sm text-center py-4">Loading your history...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load promoter dashboard data
+        async function loadPromoterDashboard() {
+            try {
+                // Fetch data from API
+                const response = await fetch('/api/promoters/dashboard');
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const data = result.data;
+                    
+                    // Update UI with real data
+                    document.getElementById('promoterName').textContent = "Promoter"; // Will be dynamic with auth
+                    document.getElementById('onboardedCount').textContent = data.businessesOnboarded || 0;
+                    document.getElementById('poolAmount').textContent = '₹' + Math.round(data.estimatedPool || 0).toLocaleString('en-IN');
+                    
+                    // Calculate potential share
+                    const onboarded = data.businessesOnboarded || 0;
+                    const pool = data.estimatedPool || 0;
+                    
+                    // For demo: assume promoter gets equal share if they have onboarded businesses
+                    let sharePercent = 0;
+                    if (onboarded > 0) {
+                        // This is simplified - real calculation happens on backend
+                        sharePercent = 25; // Demo: assuming 25% share                    }
+                    
+                    const potentialEarnings = Math.round((pool * sharePercent) / 100);
+                    document.getElementById('potentialShare').textContent = '₹' + potentialEarnings.toLocaleString('en-IN');
+                    
+                    // Status message
+                    const statusEl = document.getElementById('statusMessage');
+                    if (onboarded === 0) {
+                        statusEl.innerHTML = "<span class='text-gray-400'>Start onboarding businesses to earn your share of the pool!</span>";
+                    } else if (onboarded < 3) {
+                        statusEl.innerHTML = `<span class='text-brand-orange'>🔥 Great start! You've onboarded ${onboarded} businesses. Keep going!</span>`;
+                    } else if (onboarded < 6) {
+                        statusEl.innerHTML = `<span class='text-yellow-400'>⭐ Silver tier! Onboard ${6 - onboarded} more to reach Gold tier!</span>`;
+                    } else {
+                        statusEl.innerHTML = "<span class='text-green-400'>🏆 Gold/Platinum tier! You're a top performer!</span>";
+                    }
+                    
+                    // Set current month
+                    const now = new Date();
+                    const monthName = now.toLocaleString('default', { month: 'long' });
+                    document.getElementById('currentMonth').textContent = `${monthName} ${now.getFullYear()}`;
+                    
+                    // Load earnings history
+                    loadEarningsHistory();
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                // Show demo data if API fails
+                showDemoData();
+            }
+        }
+        
+        // Load earnings history
+        async function loadEarningsHistory() {
+            try {
+                const response = await fetch('/api/promoters/earnings-history?promoterId=1');
+                const result = await response.json();
+                
+                const historyEl = document.getElementById('earningsHistory');
+                
+                if (result.success && result.history.length > 0) {
+                    let html = '';
+                    result.history.forEach(month => {
+                        const monthName = new Date(month.year, month.month - 1).toLocaleString('default', { month: 'short' });
+                        const statusColor = month.paid ? 'text-green-400' : 'text-yellow-400';
+                        const statusText = month.paid ? '✅ Paid' : '⏳ Pending';
+                        
+                        html += `
+                            <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg">
+                                <div>                                    <div class="font-bold">${monthName} ${month.year}</div>
+                                    <div class="text-xs text-gray-400">${month.businesses_onboarded} businesses • ${month.share_percentage}% share</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-brand-orange">₹${parseFloat(month.payout_amount).toLocaleString('en-IN')}</div>
+                                    <div class="text-xs ${statusColor}">${statusText}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    historyEl.innerHTML = html;
+                } else {
+                    historyEl.innerHTML = '<div class="text-gray-400 text-sm text-center py-4">No earnings history yet. Start onboarding!</div>';
+                }
+            } catch (error) {
+                console.error('Error loading history:', error);
+            }
+        }
+        
+        // Show demo data if API fails
+        function showDemoData() {
+            document.getElementById('onboardedCount').textContent = '3';
+            document.getElementById('poolAmount').textContent = '₹12,500';
+            document.getElementById('potentialShare').textContent = '₹1,875';
+            document.getElementById('statusMessage').innerHTML = "<span class='text-brand-orange'>🔥 Demo mode: You have 3 businesses this month</span>";
+        }
+        
+        // Load on page load
+        loadPromoterDashboard();
+    </script>
+</body>
+</html>
