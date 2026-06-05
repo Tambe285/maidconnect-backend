@@ -6,16 +6,16 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Middleware
+// 1. MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files
+// Serve static files (HTML/CSS/JS)
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
-// Health check
+// 2. HEALTH CHECK
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
@@ -25,13 +25,13 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API Routes
+// 3. API ROUTES (Backend Logic)
 app.use('/api/waitlist', require('./src/routes/waitlist'));
-app.use('/api/promoters', require('./src/routes/promoters'));
+app.use('/api/promoters', require('./src/routes/promoters')); // NEW PROMOTER ROUTES
 app.use('/api/workers', require('./src/routes/workers'));
 app.use('/api/admin', require('./src/routes/admin'));
 
-// Frontend Routes
+// 4. FRONTEND ROUTES (Pages)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -52,6 +52,11 @@ app.get('/worker-dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'worker-dashboard.html'));
 });
 
+// NEW PROMOTER DASHBOARD PAGE
+app.get('/promoter-dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'promoter-dashboard.html'));
+});
+
 app.get('/leaderboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'leaderboard.html'));
 });
@@ -60,12 +65,12 @@ app.get('/worker-leaderboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'worker-leaderboard.html'));
 });
 
-// 404 handler
+// 5. 404 HANDLER (Route Not Found)
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Error handler
+// 6. ERROR HANDLER
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(500).json({ 
@@ -74,7 +79,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
+// 7. START SERVER
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ MaidConnect API running on port ${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
