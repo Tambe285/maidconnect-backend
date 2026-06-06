@@ -57,5 +57,26 @@ router.get('/business-applications', async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+// PATCH: Update Application Status
+router.patch('/applications/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
 
+    // Validate status
+    if (!['approved', 'rejected', 'pending'].includes(status)) {
+      return res.status(400).json({ success: false, error: 'Invalid status' });
+    }
+
+    const result = await query(
+      `UPDATE waitlist SET status = $1 WHERE id = $2 RETURNING *`,
+      [status, id]
+    );
+
+    res.json({ success: true, application: result.rows[0] });
+  } catch (error) {
+    console.error('Error updating status:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 module.exports = router;
