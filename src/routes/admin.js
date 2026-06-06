@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
-// Import email functions
-const { sendApprovalEmail, sendRejectionEmail } = require('../email');
+// Import email functions - FIXED PATH (go up 2 levels)
+const { sendApprovalEmail, sendRejectionEmail } = require('../../email');
 
 // ==========================================
 // 1. ADMIN LOGIN ROUTE
@@ -83,7 +83,7 @@ router.patch('/applications/:id', async (req, res) => {
       [status, id]
     );
 
-    // Send email based on new status
+    // Send email based on new status (non-blocking)
     if (status === 'approved' && application.email) {
       sendApprovalEmail(application.email, application.business_name, application.name)
         .catch(err => console.error('Email send failed:', err));
