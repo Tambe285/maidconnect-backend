@@ -1,4 +1,5 @@
-const nodemailer = require('nodemailer');
+import process from "node:process";
+import nodemailer from "nodemailer";
 
 // Create the transporter (the connection to the email server)
 const transporter = nodemailer.createTransport({
@@ -10,7 +11,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Function to send an approval email
-const sendApprovalEmail = async (to, businessName, contactName) => {
+export async function sendApprovalEmail(to, businessName, contactName) {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: to,
@@ -37,10 +38,10 @@ const sendApprovalEmail = async (to, businessName, contactName) => {
   } catch (error) {
     console.error('❌ Error sending approval email:', error);
   }
-};
+}
 
 // Function to send a rejection email
-const sendRejectionEmail = async (to, businessName, contactName) => {
+export async function sendRejectionEmail(to, businessName, contactName) {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: to,
@@ -68,6 +69,4 @@ const sendRejectionEmail = async (to, businessName, contactName) => {
   } catch (error) {
     console.error('❌ Error sending rejection email:', error);
   }
-};
-
-module.exports = { sendApprovalEmail, sendRejectionEmail };
+}
