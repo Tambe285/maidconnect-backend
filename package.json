@@ -26,7 +26,8 @@
     "crypto": "^1.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
+    "nodemon": "^3.0.1","razorpay": "^2.8.6",
+    "crypto": "^1.0.1"
   },
   "engines": {
     "node": "18.x"
