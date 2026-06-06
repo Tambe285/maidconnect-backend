@@ -4,36 +4,50 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const { query } = require('../db');
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-});
+// Initialize Razorpay (with fallback for missing keys)
+let razorpay;
+try {
+  if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+    razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET
+    });
+    console.log('✅ Razorpay initialized successfully');
+  } else {
+    console.warn('⚠️  Razorpay keys not found in environment variables');
+    console.warn('⚠️  Payment features will be disabled until keys are added');
+  }
+} catch (error) {
+  console.error('❌ Failed to initialize Razorpay:', error.message);
+}
 
 // ==========================================
 // CREATE PAYMENT ORDER
 // ==========================================
 router.post('/create-order', async (req, res) => {
   try {
+    if (!razorpay) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'Payment service not configured. Please add Razorpay keys.' 
+      });
+    }
+
     const { applicationId, amount, plan } = req.body;
 
-    // Validate amount
     if (!amount || amount < 1) {
       return res.status(400).json({ success: false, error: 'Invalid amount' });
     }
 
-    // Convert to paise (Razorpay uses paise)
     const amountInPaise = Math.round(amount * 100);
 
-    // Create Razorpay order
     const options = {
       amount: amountInPaise,
       currency: 'INR',
       receipt: `order_${applicationId}_${Date.now()}`,
-      payment_capture: 1, // Auto-capture
+      payment_capture: 1,
       notes: {
-        applicationId: applicationId,
-        plan: plan || 'Business'
+        applicationId: applicationId,        plan: plan || 'Business'
       }
     };
 
@@ -47,7 +61,8 @@ router.post('/create-order', async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating payment order:', error);
-    res.status(500).json({ success: false, error: error.message });  }
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 // ==========================================
@@ -55,29 +70,33 @@ router.post('/create-order', async (req, res) => {
 // ==========================================
 router.post('/generate-link', async (req, res) => {
   try {
+    if (!razorpay) {
+      return res.status(503).json({ 
+        success: false, 
+        error: 'Payment service not configured. Please add Razorpay keys.' 
+      });
+    }
+
     const { applicationId, amount, plan, customerEmail, customerName } = req.body;
 
-    // Validate
     if (!amount || !customerEmail) {
       return res.status(400).json({ success: false, error: 'Missing required fields' });
     }
 
     const amountInPaise = Math.round(amount * 100);
 
-    // Create payment link
     const paymentLink = await razorpay.paymentLink.create({
       amount: amountInPaise,
       currency: 'INR',
       accept_partial: false,
-      expire_by: Date.now() + (7 * 24 * 60 * 60 * 1000), // 7 days
+      expire_by: Date.now() + (7 * 24 * 60 * 60 * 1000),
       reference_id: `payment_${applicationId}_${Date.now()}`,
       description: `MaidConnect ${plan} Plan Subscription`,
       customer: {
         name: customerName || 'Business Owner',
         email: customerEmail,
-        contact: '+919876543210' // You can get this from application
-      },
-      notify: {
+        contact: '+919876543210'
+      },      notify: {
         sms: false,
         email: true
       },
@@ -86,7 +105,6 @@ router.post('/generate-link', async (req, res) => {
       callback_method: 'get'
     });
 
-    // Update application with payment link
     await query(
       `UPDATE waitlist SET payment_link = $1, payment_status = 'pending' WHERE id = $2`,
       [paymentLink.short_url, applicationId]
@@ -96,7 +114,8 @@ router.post('/generate-link', async (req, res) => {
       success: true, 
       paymentLink: paymentLink.short_url,
       paymentId: paymentLink.id
-    });  } catch (error) {
+    });
+  } catch (error) {
     console.error('Error generating payment link:', error);
     res.status(500).json({ success: false, error: error.message });
   }
@@ -109,7 +128,6 @@ router.post('/verify', async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, applicationId } = req.body;
 
-    // Verify signature
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -120,7 +138,6 @@ router.post('/verify', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid payment signature' });
     }
 
-    // Update application status
     await query(
       `UPDATE waitlist SET payment_status = 'paid', subscription_active = true, paid_at = NOW() WHERE id = $1`,
       [applicationId]
@@ -128,8 +145,7 @@ router.post('/verify', async (req, res) => {
 
     res.json({ 
       success: true, 
-      message: 'Payment verified successfully',
-      paymentId: razorpay_payment_id
+      message: 'Payment verified successfully',      paymentId: razorpay_payment_id
     });
   } catch (error) {
     console.error('Error verifying payment:', error);
@@ -145,7 +161,8 @@ router.get('/status/:applicationId', async (req, res) => {
     const { applicationId } = req.params;
 
     const result = await query(
-      `SELECT payment_status, payment_link, subscription_active FROM waitlist WHERE id = $1`,      [applicationId]
+      `SELECT payment_status, payment_link, subscription_active FROM waitlist WHERE id = $1`,
+      [applicationId]
     );
 
     if (result.rows.length === 0) {
