@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
+// Import the email functions we just created
+const { sendApprovalEmail, sendRejectionEmail } = require('../email');
 
 // ==========================================
 // 1. ADMIN LOGIN ROUTE
@@ -9,14 +11,12 @@ router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     
-    // Default credentials (You can change these in Render Environment Variables)
+    // Default credentials
     const ADMIN_USER = process.env.ADMIN_USERNAME || 'admin';
     const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'admin123';
 
     if (username === ADMIN_USER && password === ADMIN_PASS) {
-      // Create a simple token
       const token = Buffer.from(`${username}:${Date.now()}`).toString('base64');
-      
       res.json({ 
         success: true, 
         token: token,
@@ -34,17 +34,15 @@ router.post('/login', async (req, res) => {
 });
 
 // ==========================================
-// 2. BUSINESS APPLICATIONS ROUTE
+// 2. GET ALL APPLICATIONS
 // ==========================================
 router.get('/business-applications', async (req, res) => {
   try {
-    // Check for token (simple security check)
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
 
-    // Fetch all business applications from waitlist table
     const result = await query(`
       SELECT * FROM waitlist 
       WHERE business_name IS NOT NULL
@@ -57,26 +55,45 @@ router.get('/business-applications', async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
-// PATCH: Update Application Status
+
+// ==========================================
+// 3. UPDATE APPLICATION STATUS & SEND EMAIL
+// ==========================================
 router.patch('/applications/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status } = req.body; // 'approved' or 'rejected'
 
-    // Validate status
-    if (!['approved', 'rejected', 'pending'].includes(status)) {
-      return res.status(400).json({ success: false, error: 'Invalid status' });
+    // 1. Check current status so we don't spam emails
+    const currentResult = await query(`SELECT status FROM waitlist WHERE id = $1`, [id]);
+    const currentStatus = currentResult.rows[0]?.status;
+
+    // If status isn't changing, do nothing
+    if (currentStatus === status) {
+      return res.json({ success: true, message: 'Status unchanged' });
     }
 
+    // 2. Update the status in database
     const result = await query(
       `UPDATE waitlist SET status = $1 WHERE id = $2 RETURNING *`,
       [status, id]
     );
 
-    res.json({ success: true, application: result.rows[0] });
+    const application = result.rows[0];
+
+    // 3. Send Email based on new status
+    if (status === 'approved') {
+      // Fire and forget (don't wait for email to finish before responding)
+      sendApprovalEmail(application.email, application.business_name, application.name);
+    } else if (status === 'rejected') {
+      sendRejectionEmail(application.email, application.business_name, application.name);
+    }
+
+    res.json({ success: true, application: application });
   } catch (error) {
     console.error('Error updating status:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
+
 module.exports = router;
