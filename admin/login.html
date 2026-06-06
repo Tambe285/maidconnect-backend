@@ -72,7 +72,7 @@
                     msg.className = 'mt-4 p-3 rounded-lg text-center text-sm bg-green-900/30 text-green-400 border border-green-500/30';
                     msg.innerHTML = '✅ Login successful! Redirecting...';
                     msg.classList.remove('hidden');
-                    setTimeout(() => window.location.href = '/admin/dashboard', 1000);
+                    setTimeout(() => window.location.href = '/admin/dashboard?token=' + data.token, 1000);
                 } else {
                     throw new Error(data.error || 'Invalid credentials');
                 }
