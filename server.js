@@ -34,7 +34,9 @@ app.get('/', (req, res) => {
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin', 'login.html'));
 });
-app.get('/admin/dashboard', (req, res) => {
+app.get('/admin/dashboard',app.get('/admin/applications', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin', 'applications.html'));
+}); (req, res) => {
   res.sendFile(path.join(__dirname, 'admin', 'dashboard.html'));
 });
 app.get('/manifesto', (req, res) => {
