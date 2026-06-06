@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
-// Import email functions - FIXED PATH (go up 2 levels)
-const { sendApprovalEmail, sendRejectionEmail } = require('./email');
 
 // ==========================================
 // 1. ADMIN LOGIN ROUTE
@@ -47,7 +45,8 @@ router.get('/business-applications', async (req, res) => {
       WHERE business_name IS NOT NULL
       ORDER BY created_at DESC
     `);
-        res.json({ success: true, applications: result.rows });
+    
+    res.json({ success: true, applications: result.rows });
   } catch (error) {
     console.error('Error fetching applications:', error);
     res.status(500).json({ success: false, error: error.message });
@@ -55,7 +54,7 @@ router.get('/business-applications', async (req, res) => {
 });
 
 // ==========================================
-// 3. UPDATE APPLICATION STATUS & SEND EMAIL
+// 3. UPDATE APPLICATION STATUS (NO EMAIL)
 // ==========================================
 router.patch('/applications/:id', async (req, res) => {
   try {
@@ -63,18 +62,17 @@ router.patch('/applications/:id', async (req, res) => {
     const { status } = req.body;
 
     // Check current status
-    const currentResult = await query(`SELECT status, email, business_name, name FROM waitlist WHERE id = $1`, [id]);
+    const currentResult = await query(`SELECT status FROM waitlist WHERE id = $1`, [id]);
     
     if (currentResult.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Application not found' });
     }
     
     const currentStatus = currentResult.rows[0].status;
-    const application = currentResult.rows[0];
 
     // If status isn't changing, just return
     if (currentStatus === status) {
-      return res.json({ success: true, message: 'Status unchanged', application });
+      return res.json({ success: true, message: 'Status unchanged' });
     }
 
     // Update the status
@@ -83,19 +81,14 @@ router.patch('/applications/:id', async (req, res) => {
       [status, id]
     );
 
-    // Send email based on new status (non-blocking)
-    if (status === 'approved' && application.email) {
-      sendApprovalEmail(application.email, application.business_name, application.name)
-        .catch(err => console.error('Email send failed:', err));
-    } else if (status === 'rejected' && application.email) {
-      sendRejectionEmail(application.email, application.business_name, application.name)
-        .catch(err => console.error('Email send failed:', err));
-    }
+    // Email feature disabled for now
+    // TODO: Add email notifications later
 
     res.json({ success: true, application: result.rows[0] });
   } catch (error) {
     console.error('Error updating status:', error);
     res.status(500).json({ success: false, error: error.message });
-  }});
+  }
+});
 
 module.exports = router;
