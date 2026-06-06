@@ -6,36 +6,40 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// 1. MIDDLEWARE
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files (HTML/CSS/JS)
+// Serve static files from public and admin folders
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'admin')));
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
-// 2. HEALTH CHECK
+// Import routes
+const adminRoutes = require('./src/routes/admin');
+const paymentRoutes = require('./src/routes/payment');
+
+// Use routes
+app.use('/api/admin', adminRoutes);
+app.use('/api/payment', paymentRoutes);
+
+// Health check
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
+  res.json({
+    status: 'healthy',
     message: 'MaidConnect API is running',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
   });
 });
 
-// 3. API ROUTES (Backend Logic)
-app.use('/api/waitlist', require('./src/routes/waitlist'));
-app.use('/api/promoters', require('./src/routes/promoters'));
-app.use('/api/workers', require('./src/routes/workers'));
-app.use('/api/admin', require('./src/routes/admin'));
-
-// 4. FRONTEND ROUTES (Pages)
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Payment success page
+app.get('/payment/success', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'payment-success.html'));
 });
 
+// Serve admin pages
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin', 'login.html'));
 });
@@ -44,57 +48,45 @@ app.get('/admin/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin', 'dashboard.html'));
 });
 
-// NEW: Admin Applications Page
 app.get('/admin/applications', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin', 'applications.html'));
 });
 
-app.get('/manifesto', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'magazine.html'));
+// Serve homepage
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/worker-dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'worker-dashboard.html'));
-});
-
-app.get('/promoter-dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'promoter-dashboard.html'));
-});
-
+// Business plans page
 app.get('/business-plans', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'business-plans.html'));
 });
 
-app.get('/business-signup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'business-signup.html'));
-});
-
-app.get('/leaderboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'leaderboard.html'));
-});
-
-app.get('/worker-leaderboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'worker-leaderboard.html'));
-});
-
-// 5. 404 HANDLER (Route Not Found)
+// 404 handler
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ error: 'Not found' });
 });
 
-// 6. ERROR HANDLER
+// Error handler
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({ 
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
+  console.error(err.stack);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
-// 7. START SERVER
+// Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ MaidConnect API running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`
+    ╔════════════════════════════════════════════╗
+    ║                                            ║
+    ║     MaidConnect API Server Running!        ║
+    ║                                            ║
+    ║     Port: ${PORT}                           ║
+    ║     Environment: ${process.env.NODE_ENV || 'development'}              ║
+    ║                                            ║
+    ║     Health: http://localhost:${PORT}/health ║
+    ║                                            ║
+    ╚════════════════════════════════════════════╝
+  `);
 });
 
 module.exports = app;
