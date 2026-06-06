@@ -54,14 +54,13 @@ router.get('/business-applications', async (req, res) => {
 });
 
 // ==========================================
-// 3. UPDATE APPLICATION STATUS (NO EMAIL)
+// 3. UPDATE APPLICATION STATUS
 // ==========================================
 router.patch('/applications/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    // Check current status
     const currentResult = await query(`SELECT status FROM waitlist WHERE id = $1`, [id]);
     
     if (currentResult.rows.length === 0) {
@@ -70,19 +69,14 @@ router.patch('/applications/:id', async (req, res) => {
     
     const currentStatus = currentResult.rows[0].status;
 
-    // If status isn't changing, just return
     if (currentStatus === status) {
       return res.json({ success: true, message: 'Status unchanged' });
     }
 
-    // Update the status
     const result = await query(
       `UPDATE waitlist SET status = $1 WHERE id = $2 RETURNING *`,
       [status, id]
     );
-
-    // Email feature disabled for now
-    // TODO: Add email notifications later
 
     res.json({ success: true, application: result.rows[0] });
   } catch (error) {
