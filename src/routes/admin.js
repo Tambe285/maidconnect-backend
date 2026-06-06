@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
 // Import email functions - FIXED PATH (go up 2 levels)
-const { sendApprovalEmail, sendRejectionEmail } = require('../../email');
+const { sendApprovalEmail, sendRejectionEmail } = require('../email');
 
 // ==========================================
 // 1. ADMIN LOGIN ROUTE
