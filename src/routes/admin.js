@@ -96,5 +96,19 @@ router.post('/calculate-yearly-worker-profit', async (_req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
-
+// Get all business applications
+router.get('/business-applications', async (_req, res) => {
+  try {
+    const result = await query(`
+      SELECT * FROM waitlist 
+      WHERE business_name IS NOT NULL
+      ORDER BY created_at DESC
+    `);
+    
+    res.json({ success: true, applications: result.rows });
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 module.exports = router;
