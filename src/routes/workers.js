@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
-const { 
-  sendWorkerRegistrationEmail, 
-  sendWorkerStatusEmail 
-} = require('../utils/emailService');
+// const { 
+//   sendWorkerRegistrationEmail, 
+//   sendWorkerStatusEmail 
+// } = require('../utils/emailService');
 
 // ==========================================
 // WORKER REGISTRATION
