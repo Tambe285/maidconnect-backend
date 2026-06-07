@@ -3,28 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Join as a Worker - MaidConnect</title>
+    <title>Join as Worker - MaidConnect</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: { orange: '#F97316', dark: '#111827' }
-                    },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
 </head>
-<body class="bg-gray-50 font-sans">
-    <!-- Header -->
+<body class="bg-gray-50 min-h-screen">
     <nav class="bg-white border-b border-gray-200 px-6 py-4">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-brand-orange rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
                 <div>
                     <h1 class="text-xl font-bold text-gray-900">MaidConnect</h1>
                     <p class="text-sm text-gray-500">Worker Registration</p>
@@ -34,55 +20,72 @@
         </div>
     </nav>
 
-    <!-- Form -->
     <div class="max-w-2xl mx-auto px-6 py-12">
         <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
             <h2 class="text-2xl font-bold text-gray-900 mb-2">Join Our Verified Workforce</h2>
-            <p class="text-gray-600 mb-8">Fill in your details. Our team will verify your documents and get you started.</p>
+            <p class="text-gray-600 mb-8">Fill in your details and upload documents. Our team will verify within 24-48 hours.</p>
 
-            <form id="workerForm" class="space-y-6">
+            <form id="workerForm" enctype="multipart/form-data" class="space-y-6">
                 <!-- Personal Info -->
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
-                        <input type="text" id="full_name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        <input type="text" id="full_name" name="full_name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     </div>
-                    <div>                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
-                        <input type="tel" id="phone" required placeholder="+919876543210" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" required placeholder="+919876543210" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-                        <input type="email" id="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        <input type="email" id="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Age</label>
-                        <input type="number" id="age" min="18" max="65" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        <input type="number" id="age" name="age" min="18" max="65" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-                        <select id="gender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                            <option value="">Select Gender</option>
-                            <option value="male">Male</option>
+                        <select id="gender" name="gender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                            <option value="">Select Gender</option>                            <option value="male">Male</option>
                             <option value="female">Female</option>
                             <option value="other">Other</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Documents -->
+                <!-- Documents Section -->
                 <div class="border-t border-gray-200 pt-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Identity Documents</h3>
-                    <div class="grid md:grid-cols-2 gap-6">
+                    
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Aadhaar Number</label>
-                            <input type="text" id="aadhaar_number" placeholder="XXXX-XXXX-XXXX" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            <input type="text" id="aadhaar_number" name="aadhaar_number" placeholder="XXXX-XXXX-XXXX" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">PAN Number</label>
-                            <input type="text" id="pan_number" placeholder="ABCDE1234F" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            <input type="text" id="pan_number" name="pan_number" placeholder="ABCDE1234F" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500 mt-2">* Document upload feature coming soon. For now, just enter the numbers.</p>
+
+                    <!-- File Uploads -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Aadhaar Card (Front) *</label>
+                            <input type="file" id="aadhaar_front" name="aadhaar_front" accept="image/*,.pdf" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                            <p class="text-xs text-gray-500 mt-1">Upload clear photo or PDF (Max 5MB)</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Aadhaar Card (Back)</label>
+                            <input type="file" id="aadhaar_back" name="aadhaar_back" accept="image/*,.pdf" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">PAN Card *</label>
+                            <input type="file" id="pan_card" name="pan_card" accept="image/*,.pdf" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                            <p class="text-xs text-gray-500 mt-1">Upload clear photo or PDF (Max 5MB)</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Skills & Experience -->
@@ -93,27 +96,23 @@
                         <label class="block text-sm font-medium text-gray-700 mb-3">Select Your Skills</label>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                             <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                                <input type="checkbox" value="cooking" class="skill-check w-5 h-5 text-orange-500 rounded focus:ring-orange-500">
-                                <span>Cooking</span>
+                                <input type="checkbox" name="skills" value="cooking" class="w-5 h-5 text-orange-500 rounded">                                <span>Cooking</span>
                             </label>
-                            <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">                                <input type="checkbox" value="cleaning" class="skill-check w-5 h-5 text-orange-500 rounded focus:ring-orange-500">
+                            <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                                <input type="checkbox" name="skills" value="cleaning" class="w-5 h-5 text-orange-500 rounded">
                                 <span>Cleaning</span>
                             </label>
                             <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                                <input type="checkbox" value="babysitting" class="skill-check w-5 h-5 text-orange-500 rounded focus:ring-orange-500">
+                                <input type="checkbox" name="skills" value="babysitting" class="w-5 h-5 text-orange-500 rounded">
                                 <span>Babysitting</span>
                             </label>
                             <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                                <input type="checkbox" value="eldercare" class="skill-check w-5 h-5 text-orange-500 rounded focus:ring-orange-500">
+                                <input type="checkbox" name="skills" value="eldercare" class="w-5 h-5 text-orange-500 rounded">
                                 <span>Elder Care</span>
                             </label>
                             <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                                <input type="checkbox" value="driver" class="skill-check w-5 h-5 text-orange-500 rounded focus:ring-orange-500">
+                                <input type="checkbox" name="skills" value="driver" class="w-5 h-5 text-orange-500 rounded">
                                 <span>Driver</span>
-                            </label>
-                            <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                                <input type="checkbox" value="gardening" class="skill-check w-5 h-5 text-orange-500 rounded focus:ring-orange-500">
-                                <span>Gardening</span>
                             </label>
                         </div>
                     </div>
@@ -121,11 +120,11 @@
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Years of Experience</label>
-                            <input type="number" id="experience_years" min="0" value="0" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            <input type="number" id="experience_years" name="experience_years" min="0" value="0" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Availability</label>
-                            <select id="availability" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            <select id="availability" name="availability" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                                 <option value="full-time">Full Time</option>
                                 <option value="part-time">Part Time</option>
                                 <option value="weekends">Weekends Only</option>
@@ -136,25 +135,20 @@
 
                     <div class="mt-6">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Location/City</label>
-                        <input type="text" id="preferred_location" placeholder="e.g., Mumbai, Delhi, Bangalore" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        <input type="text" id="preferred_location" name="preferred_location" placeholder="e.g., Mumbai, Delhi, Bangalore" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     </div>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" id="submitBtn" class="w-full bg-brand-orange text-white py-4 rounded-xl font-bold text-lg hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="submit" id="submitBtn" class="w-full bg-orange-500 text-white py-4 rounded-xl font-bold text-lg hover:bg-orange-600 transition">
                     Submit Registration
                 </button>
             </form>
-            <!-- Success Message (Hidden by default) -->
+
             <div id="successMessage" class="hidden mt-6 p-6 bg-green-50 border border-green-200 rounded-xl text-center">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 </div>
                 <h3 class="text-xl font-bold text-green-900 mb-2">Registration Successful!</h3>
-                <p class="text-green-700">Thank you for joining MaidConnect. Our team will verify your details and contact you within 24-48 hours.</p>
-                <a href="/" class="inline-block mt-4 text-orange-600 font-medium hover:text-orange-700">← Back to Home</a>
+                <p class="text-green-700">Thank you for joining MaidConnect. Our team will verify your documents within 24-48 hours.</p>
             </div>
         </div>
     </div>
@@ -165,36 +159,27 @@
             
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.textContent = 'Submitting...';
+            btn.textContent = 'Uploading...';
 
-            // Collect skills
-            const skills = Array.from(document.querySelectorAll('.skill-check:checked')).map(cb => cb.value);
-
-            const payload = {
-                full_name: document.getElementById('full_name').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                age: document.getElementById('age').value || null,
-                gender: document.getElementById('gender').value || null,
-                aadhaar_number: document.getElementById('aadhaar_number').value || null,
-                pan_number: document.getElementById('pan_number').value || null,
-                skills: skills,
-                experience_years: document.getElementById('experience_years').value || 0,
-                availability: document.getElementById('availability').value,
-                preferred_location: document.getElementById('preferred_location').value || null,
-                document_urls: []
-            };
+            const formData = new FormData(this);
+            
+            // Get all checkbox values for skills
+            const skills = [];
+            document.querySelectorAll('input[name="skills"]:checked').forEach(cb => {
+                skills.push(cb.value);
+            });
+            formData.set('skills', JSON.stringify(skills));
 
             try {
                 const res = await fetch('/api/workers/register', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: formData
                 });
 
                 const data = await res.json();
                 
-                if (data.success) {                    document.getElementById('workerForm').classList.add('hidden');
+                if (data.success) {
+                    document.getElementById('workerForm').classList.add('hidden');
                     document.getElementById('successMessage').classList.remove('hidden');
                 } else {
                     alert('Error: ' + data.error);
@@ -203,11 +188,10 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Failed to submit. Please check your connection.');
+                alert('Failed to submit. Please try again.');
                 btn.disabled = false;
                 btn.textContent = 'Submit Registration';
             }
         });
     </script>
-</body>
-</html>
+</body></html>
