@@ -102,7 +102,7 @@ app.listen(PORT, '0.0.0.0', () => {
     ║                                            ║
          Port: ${PORT}                           ║
     ║     Environment: ${process.env.NODE_ENV || 'development'}              ║
-                                                ║
+    ║                                            ║
     ║     Health: http://localhost:${PORT}/health ║
                                                 ║
     ╚════════════════════════════════════════════╝
