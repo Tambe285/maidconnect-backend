@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Become a Promoter - MaidConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { orange: '#F97316', dark: '#111827' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Header -->
+    <nav class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-brand-orange rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">MaidConnect</h1>
+                    <p class="text-sm text-gray-500">Promoter Program</p>
+                </div>
+            </div>
+            <a href="/" class="text-gray-600 hover:text-gray-900">← Back to Home</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-2xl mx-auto px-6 py-12">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Join Our Promoter Program</h2>
+                <p class="text-gray-600">Earn 5% commission on every business you refer!</p>
+            </div>
+
+            <!-- Benefits -->
+            <div class="grid md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-orange-50 p-4 rounded-xl text-center">
+                    <div class="text-3xl mb-2">💰</div>
+                    <h3 class="font-semibold text-gray-900">5% Commission</h3>
+                    <p class="text-sm text-gray-600">Earn on every successful referral</p>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-xl text-center">
+                    <div class="text-3xl mb-2">📈</div>
+                    <h3 class="font-semibold text-gray-900">Unlimited</h3>
+                    <p class="text-sm text-gray-600">Refer as many businesses as you want</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-xl text-center">
+                    <div class="text-3xl mb-2">⚡</div>
+                    <h3 class="font-semibold text-gray-900">Instant Tracking</h3>
+                    <p class="text-sm text-gray-600">Real-time dashboard & analytics</p>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <form id="promoterForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                    <input type="text" id="full_name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                    <input type="email" id="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb
