@@ -19,10 +19,12 @@ app.use('/admin', express.static(path.join(__dirname, 'admin')));
 // Import routes
 const adminRoutes = require('./src/routes/admin');
 const paymentRoutes = require('./src/routes/payment');
+const workerRoutes = require('./src/routes/workers');
 
 // Use routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/workers', workerRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -37,6 +39,11 @@ app.get('/health', (req, res) => {
 // Payment success page
 app.get('/payment/success', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'payment-success.html'));
+});
+
+// Worker signup page
+app.get('/worker-signup', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'worker-signup.html'));
 });
 
 // Serve admin pages
@@ -84,7 +91,7 @@ app.listen(PORT, '0.0.0.0', () => {
     ║     Environment: ${process.env.NODE_ENV || 'development'}              ║
     ║                                            ║
     ║     Health: http://localhost:${PORT}/health ║
-    ║                                            ║
+                                                ║
     ╚════════════════════════════════════════════╝
   `);
 });
