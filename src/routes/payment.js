@@ -3,7 +3,6 @@ const router = express.Router();
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const { query } = require('../db');
-// const { sendPaymentReceiptEmail } = require('../utils/emailService');
 
 // Initialize Razorpay
 let razorpay;
@@ -26,10 +25,14 @@ try {
 // ==========================================
 router.post('/create-order', async (req, res) => {
   try {
-    if (!razorpay) return res.status(503).json({ success: false, error: 'Payment service not configured' });
+    if (!razorpay) {
+      return res.status(503).json({ success: false, error: 'Payment service not configured' });
+    }
 
     const { applicationId, amount, plan } = req.body;
-    if (!amount || amount < 1) return res.status(400).json({ success: false, error: 'Invalid amount' });
+    if (!amount || amount < 1) {
+      return res.status(400).json({ success: false, error: 'Invalid amount' });
+    }
 
     const amountInPaise = Math.round(amount * 100);
     const options = {
@@ -44,17 +47,21 @@ router.post('/create-order', async (req, res) => {
     res.json({ success: true, orderId: order.id, amount: order.amount, currency: order.currency });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
-  }
-});
+  }});
 
-// ==========================================// GENERATE PAYMENT LINK
+// ==========================================
+// GENERATE PAYMENT LINK
 // ==========================================
 router.post('/generate-link', async (req, res) => {
   try {
-    if (!razorpay) return res.status(503).json({ success: false, error: 'Payment service not configured' });
+    if (!razorpay) {
+      return res.status(503).json({ success: false, error: 'Payment service not configured' });
+    }
 
     const { applicationId, amount, plan, customerEmail, customerName } = req.body;
-    if (!amount || !customerEmail) return res.status(400).json({ success: false, error: 'Missing required fields' });
+    if (!amount || !customerEmail) {
+      return res.status(400).json({ success: false, error: 'Missing required fields' });
+    }
 
     const amountInPaise = Math.round(amount * 100);
     const paymentLink = await razorpay.paymentLink.create({
@@ -64,7 +71,11 @@ router.post('/generate-link', async (req, res) => {
       expire_by: Date.now() + (7 * 24 * 60 * 60 * 1000),
       reference_id: `payment_${applicationId}_${Date.now()}`,
       description: `MaidConnect ${plan} Plan Subscription`,
-      customer: { name: customerName || 'Business Owner', email: customerEmail, contact: '+919876543210' },
+      customer: { 
+        name: customerName || 'Business Owner', 
+        email: customerEmail, 
+        contact: '+919876543210' 
+      },
       notify: { sms: false, email: true },
       reminder_enable: true,
       callback_url: `${process.env.FRONTEND_URL || 'https://maidconnect-backend-api.onrender.com'}/payment/success`,
@@ -76,45 +87,65 @@ router.post('/generate-link', async (req, res) => {
       [paymentLink.short_url, applicationId]
     );
 
-    res.json({ success: true, paymentLink: paymentLink.short_url, paymentId: paymentLink.id });
+    res.json({ 
+      success: true, 
+      paymentLink: paymentLink.short_url, 
+      paymentId: paymentLink.id 
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 });
-
 // ==========================================
 // VERIFY PAYMENT
 // ==========================================
 router.post('/verify', async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, applicationId, amount, plan, customerEmail, customerName } = req.body;
+    const { 
+      razorpay_order_id, 
+      razorpay_payment_id, 
+      razorpay_signature, 
+      applicationId, 
+      amount, 
+      plan, 
+      customerEmail, 
+      customerName 
+    } = req.body;
 
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSign = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET).update(sign.toString()).digest('hex');
+    const expectedSign = crypto
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(sign.toString())
+      .digest('hex');
 
     if (razorpay_signature !== expectedSign) {
-      return res.status(400).json({ success: false, error: 'Invalid payment signature' });
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Invalid payment signature' 
+      });
     }
 
-    // Update database    await query(
+    // Update database
+    await query(
       `UPDATE waitlist SET payment_status = 'paid', subscription_active = true, paid_at = NOW() WHERE id = $1`,
       [applicationId]
     );
 
-    // Send Payment Receipt Email (COMMENTED OUT)
-    // if (customerEmail) {
-    //   sendPaymentReceiptEmail(customerEmail, customerName, amount, plan);
-    // }
+    // Email sending is disabled for now
 
-    res.json({ success: true, message: 'Payment verified successfully', paymentId: razorpay_payment_id });
+    res.json({ 
+      success: true, 
+      message: 'Payment verified successfully', 
+      paymentId: razorpay_payment_id 
+    });
   } catch (error) {
+    console.error('Payment verification error:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
 // ==========================================
-// GET PAYMENT STATUS
-// ==========================================
+// GET PAYMENT STATUS// ==========================================
 router.get('/status/:applicationId', async (req, res) => {
   try {
     const { applicationId } = req.params;
@@ -123,7 +154,12 @@ router.get('/status/:applicationId', async (req, res) => {
       [applicationId]
     );
 
-    if (result.rows.length === 0) return res.status(404).json({ success: false, error: 'Application not found' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Application not found' 
+      });
+    }
 
     res.json({ 
       success: true, 
