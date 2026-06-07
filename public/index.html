@@ -3,115 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaidConnect - Domestic Help Re-imagined</title>
+    <title>MaidConnect - Your Trusted Maid Service Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            orange: '#F97316',
-                            dark: '#111111',
-                            light: '#F3F0EB'
-                        }
+                        brand: { orange: '#F97316', blue: '#3B82F6', dark: '#111827' }
                     },
-                    fontFamily: {
-                        serif: ['Playfair Display', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-brand-dark text-white font-sans">
-
+<body class="bg-gray-50 font-sans">
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 bg-brand-dark/90 backdrop-blur-md border-b border-white/10">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <nav class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-brand-orange rounded-full flex items-center justify-center font-serif text-xl font-bold">M</div>
-                <span class="font-serif text-2xl font-bold">MaidConnect</span>
+                <div class="w-10 h-10 bg-brand-orange rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">MaidConnect</h1>
+                    <p class="text-sm text-gray-500">Trusted Maid Services</p>
+                </div>
             </div>
-            <a href="/#waitlist" class="bg-brand-orange px-6 py-2 rounded-full font-bold hover:bg-orange-600 transition">Join Waitlist</a>
+            <div class="flex gap-6">
+                <a href="#services" class="text-gray-600 hover:text-brand-orange">Services</a>
+                <a href="#how-it-works" class="text-gray-600 hover:text-brand-orange">How It Works</a>
+                <a href="/customer-login" class="text-gray-600 hover:text-brand-orange">Login</a>
+                <a href="/admin" class="px-4 py-2 bg-brand-orange text-white rounded-lg hover:bg-orange-600">Admin</a>
+            </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20">
-        <div class="max-w-5xl">
-            <div class="inline-block border border-white/20 rounded-full px-6 py-2 mb-8">
-                <span class="text-sm uppercase tracking-widest text-brand-orange">● Launching Across 6 States</span>
-            </div>
-            
-            <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl font-bold leading-tight mb-6">
-                Domestic help,<br>                <span class="text-brand-orange italic">re-imagined</span> for India.
-            </h1>
-            
-            <p class="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-10">
-                Aadhaar-verified workers. Transparent ratings. UPI payments straight to the person who did the work.
-            </p>
-            
-            <div class="flex flex-col md:flex-row gap-4 justify-center mb-16">
-                <a href="/#waitlist" class="bg-brand-orange text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-orange-600 transition">Hire a Worker</a>
-                <a href="/worker-dashboard" class="border border-white/20 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white/10 transition">Worker Login</a>
-            </div>
-            
-            <!-- Stats -->
-            <div class="grid grid-cols-3 gap-8 max-w-2xl mx-auto pt-8 border-t border-white/10">
-                <div>
-                    <div class="font-serif text-4xl font-bold text-brand-orange">6</div>
-                    <div class="text-sm text-gray-400 uppercase tracking-wider mt-1">States</div>
+    <section class="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-20">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4">Find Trusted Maids & Househelp</h2>
+            <p class="text-xl text-orange-100 mb-8">Verified, trained, and reliable domestic workers for your home</p>
+            <div class="flex justify-center gap-4">
+                <a href="/browse-workers" class="px-8 py-4 bg-white text-brand-orange rounded-xl font-bold text-lg hover:bg-gray-100 transition">Find Workers</a>
+                <a href="/worker-signup.html" class="px-8 py-4 bg-transparent border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white hover:text-brand-orange transition">Join as Worker</a>
+            </div>        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <h3 class="text-3xl font-bold text-center text-gray-900 mb-12">Our Services</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 p-8 rounded-2xl text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-bold text-gray-900 mb-2">Home Cleaning</h4>
+                    <p class="text-gray-600">Professional housekeeping and deep cleaning services</p>
                 </div>
-                <div>
-                    <div class="font-serif text-4xl font-bold text-brand-orange">10+</div>
-                    <div class="text-sm text-gray-400 uppercase tracking-wider mt-1">Languages</div>
+                <div class="bg-gray-50 p-8 rounded-2xl text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-bold text-gray-900 mb-2">Elder Care</h4>
+                    <p class="text-gray-600">Compassionate care for your elderly family members</p>
                 </div>
-                <div>
-                    <div class="font-serif text-4xl font-bold text-brand-orange">95%</div>
-                    <div class="text-sm text-gray-400 uppercase tracking-wider mt-1">To Workers</div>
+                <div class="bg-gray-50 p-8 rounded-2xl text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-bold text-gray-900 mb-2">Babysitting</h4>
+                    <p class="text-gray-600">Trusted childcare providers for your little ones</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Explore MaidConnect Section -->
-    <section class="py-24 px-6 bg-brand-light text-brand-dark">
-        <div class="max-w-4xl mx-auto text-center">
-            <h2 class="font-serif text-4xl font-bold mb-12">Explore MaidConnect</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- Our Story Card -->
-                <a href="/manifesto" class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition block">
-                    <h3 class="font-serif text-2xl font-bold mb-3 text-brand-dark">Our Story</h3>
-                    <p class="text-gray-600">Read our manifesto and learn about our profit-sharing model</p>
-                </a>
-                
-                <!-- Worker Dashboard Card -->
-                <a href="/worker-dashboard" class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition block">
-                    <h3 class="font-serif text-2xl font-bold mb-3 text-brand-dark">Worker Dashboard</h3>
-                    <p class="text-gray-600">Track your progress and earnings</p>
-                </a>
-                
-                <!-- Admin Panel Card -->
-                <a href="/admin" class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition block">
-                    <h3 class="font-serif text-2xl font-bold mb-3 text-brand-dark">Admin Panel</h3>                    <p class="text-gray-600">Manage the platform</p>
-                </a>
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <h3 class="text-3xl font-bold text-center text-gray-900 mb-12">How It Works</h3>
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-brand-orange text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">1</div>
+                    <h4 class="font-bold text-gray-900 mb-2">Browse Workers</h4>
+                    <p class="text-gray-600 text-sm">View verified profiles with skills and ratings</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-brand-orange text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">2</div>
+                    <h4 class="font-bold text-gray-900 mb-2">Book Service</h4>
+                    <p class="text-gray-600 text-sm">Choose date, time, and service type</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-brand-orange text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">3</div>                    <h4 class="font-bold text-gray-900 mb-2">Get Service</h4>
+                    <p class="text-gray-600 text-sm">Professional worker arrives at your home</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-brand-orange text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">4</div>
+                    <h4 class="font-bold text-gray-900 mb-2">Rate & Review</h4>
+                    <p class="text-gray-600 text-sm">Share your experience and help others</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                <!-- For Businesses Card (NEW) -->
-                <a href="/business-plans" class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition block">
-                    <h3 class="font-serif text-2xl font-bold mb-3 text-brand-dark">For Businesses</h3>
-                    <p class="text-gray-600">Hire verified staff for your shop, mall, or hotel</p>
+    <!-- Portal Links Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <h3 class="text-3xl font-bold text-center text-gray-900 mb-12">Access Portals</h3>
+            <div class="grid md:grid-cols-4 gap-6">
+                <a href="/customer-signup" class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl hover:shadow-lg transition transform hover:-translate-y-1">
+                    <h4 class="text-xl font-bold mb-2">Customer Portal</h4>
+                    <p class="text-blue-100 text-sm">Sign up & book workers</p>
+                </a>
+                <a href="/worker-signup.html" class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl hover:shadow-lg transition transform hover:-translate-y-1">
+                    <h4 class="text-xl font-bold mb-2">Worker Portal</h4>
+                    <p class="text-green-100 text-sm">Register as a verified worker</p>
+                </a>
+                <a href="/business-plans" class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-2xl hover:shadow-lg transition transform hover:-translate-y-1">
+                    <h4 class="text-xl font-bold mb-2">Business Portal</h4>
+                    <p class="text-purple-100 text-sm">Subscribe for bulk services</p>
+                </a>
+                <a href="/admin" class="bg-gradient-to-br from-gray-700 to-gray-800 text-white p-6 rounded-2xl hover:shadow-lg transition transform hover:-translate-y-1">
+                    <h4 class="text-xl font-bold mb-2">Admin Dashboard</h4>
+                    <p class="text-gray-300 text-sm">Manage platform & approvals</p>
                 </a>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 text-center text-sm text-gray-600 border-t border-white/10">
-        <p>© 2026 MaidConnect. All rights reserved.</p>
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-gray-400">© 2026 MaidConnect. All rights reserved.</p>
+            <p class="text-gray-500 text-sm mt-2">Connecting trusted workers with families</p>
+        </div>
     </footer>
-
 </body>
 </html>
