@@ -38,7 +38,7 @@ router.post('/register', async (req, res) => {
     ]);
 
     // Send confirmation email
-    sendWorkerRegistrationEmail(email, full_name);
+    // sendWorkerRegistrationEmail(email, full_name);
 
     res.json({ 
       success: true, 
@@ -99,7 +99,7 @@ router.patch('/:id', async (req, res) => {
       [status, verified_by || 'Admin', id]    );
 
     // Send status update email
-    sendWorkerStatusEmail(worker.email, worker.full_name, status);
+    // sendWorkerStatusEmail(worker.email, worker.full_name, status);
 
     res.json({ success: true, worker: result.rows[0] });
   } catch (error) {
