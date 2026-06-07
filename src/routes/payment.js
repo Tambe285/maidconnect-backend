@@ -83,7 +83,7 @@ router.post('/generate-link', async (req, res) => {
 });
 
 // ==========================================
-// VERIFY PAYMENT & SEND RECEIPT
+// VERIFY PAYMENT
 // ==========================================
 router.post('/verify', async (req, res) => {
   try {
@@ -101,10 +101,10 @@ router.post('/verify', async (req, res) => {
       [applicationId]
     );
 
-    // Send Payment Receipt Email
-    if (customerEmail) {
-      // sendPaymentReceiptEmail(customerEmail, customerName, amount, plan);
-    }
+    // Send Payment Receipt Email (COMMENTED OUT)
+    // if (customerEmail) {
+    //   sendPaymentReceiptEmail(customerEmail, customerName, amount, plan);
+    // }
 
     res.json({ success: true, message: 'Payment verified successfully', paymentId: razorpay_payment_id });
   } catch (error) {
