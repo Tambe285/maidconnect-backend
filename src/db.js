@@ -2,9 +2,7 @@ const { Pool } = require('pg');
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production'
-    ? { rejectUnauthorized: false }
-    : false,
+  ssl: { rejectUnauthorized: false, checkServerIdentity: () => undefined },
   max: 5,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 10000,
@@ -26,7 +24,7 @@ async function connectDB() {
       const result = await client.query('SELECT NOW() as now');
       console.log('[DB] Connected successfully at:', result.rows[0].now);
       client.release();
-      await initializeSchema();
+      console.log('[DB] Schema managed by Supabase — skipping auto-create');
       return true;
     } catch (err) {
       retries--;
@@ -37,71 +35,6 @@ async function connectDB() {
   }
 }
 
-async function initializeSchema() {
-  const schema = `
-    CREATE TABLE IF NOT EXISTS waitlist (
-      id             SERIAL PRIMARY KEY,
-      name           VARCHAR(100)  NOT NULL,
-      phone          VARCHAR(15)   NOT NULL,
-      service        VARCHAR(50),
-      email          VARCHAR(255),
-      business_name  VARCHAR(255),
-      plan           VARCHAR(50)   DEFAULT 'Starter',
-      promoter_code  VARCHAR(100),
-      city           VARCHAR(100)  DEFAULT 'Not specified',
-      created_at     TIMESTAMPTZ   NOT NULL DEFAULT NOW()
-    );
-
-    CREATE TABLE IF NOT EXISTS employers (
-      id            SERIAL PRIMARY KEY,
-      name          VARCHAR(100) NOT NULL,
-      phone         VARCHAR(15)  NOT NULL UNIQUE,
-      email         VARCHAR(255) UNIQUE,
-      city          VARCHAR(100),
-      password_hash TEXT,
-      is_verified   BOOLEAN DEFAULT FALSE,
-      plan          VARCHAR(20) DEFAULT 'free',
-      created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-
-    CREATE TABLE IF NOT EXISTS workers (
-      id               SERIAL PRIMARY KEY,
-      name             VARCHAR(100) NOT NULL,
-      phone            VARCHAR(15)  NOT NULL UNIQUE,
-      photo_url        TEXT,
-      aadhaar_verified BOOLEAN  DEFAULT FALSE,
-      skills           TEXT[]   DEFAULT '{}',
-      experience_years INTEGER  DEFAULT 0,
-      city             VARCHAR(100),
-      area             VARCHAR(100),
-      availability     VARCHAR(20) DEFAULT 'available',
-      expected_salary  INTEGER,
-      rating           NUMERIC(2,1) DEFAULT 0.0,
-      is_approved      BOOLEAN  DEFAULT FALSE,
-      password_hash    TEXT,
-      created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-
-    CREATE INDEX IF NOT EXISTS idx_workers_city ON workers(city);
-    CREATE INDEX IF NOT EXISTS idx_waitlist_phone ON waitlist(phone);
-  `;
-
-  try {
-    await pool.query(schema);
-    console.log('[DB] Schema initialized successfully');
-  } catch (err) {
-    console.error('[DB] Schema error:', err.message);
-    throw err;
-  }
-}
-
-async function query(text, params) {
-  try {
-    return await pool.query(text, params);
-  } catch (err) {
-    console.error('[DB] Query error:', err.message);
-    throw err;
-  }
-}
+const query = (text, params) => pool.query(text, params);
 
 module.exports = { pool, query, connectDB };
