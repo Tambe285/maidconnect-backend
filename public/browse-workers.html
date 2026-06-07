@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Workers - MaidConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-900">Find Workers</h1>
+        <div class="flex gap-4">
+            <a href="/my-bookings" class="text-gray-600 hover:text-blue-600">My Bookings</a>
+            <button onclick="logout()" class="text-red-600 hover:text-red-800">Logout</button>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <div id="workerGrid" class="grid md:grid-cols-3 gap-6">
+            <div class="col-span-3 text-center py-10 text-gray-500">Loading workers...</div>
+        </div>
+    </div>
+
+    <script>
+        const customer = JSON.parse(localStorage.getItem('customer'));
+        if (!customer) window.location.href = '/customer-login';
+
+        async function loadWorkers() {
+            try {
+                const res = await fetch('/api/customers/workers');
+                const data = await res.json();
+                if (data.success) displayWorkers(data.workers);
+            } catch (err) { console.error(err); }
+        }
+
+        function displayWorkers(workers) {
+            const grid = document.getElementById('workerGrid');
+            if (!workers.length) { grid.innerHTML = '<p class="text-center">No workers available.</p>'; return; }
+            
+            grid.innerHTML = workers.map(w => `
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-900">${w.full_name}</h3>
+                    <p class="text-sm text-gray-500 mb-2">${w.age} yrs • ${w.gender || 'Any'}</p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${w.skills ? w.skills.map(s => `<span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">${s}</span>`
