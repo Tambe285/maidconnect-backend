@@ -1,13 +1,19 @@
 const nodemailer = require('nodemailer');
 
-// Create transporter
+// Create transporter with proper Gmail settings for Render
 const createTransporter = () => {
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // true for 465 port
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
-    }
+    },
+    // Connection timeout settings
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 10000,
+    socketTimeout: 10000
   });
 };
 
@@ -24,10 +30,11 @@ const sendEmail = async (to, subject, html) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent:', info.messageId);
+    console.log('✅ Email sent successfully:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('❌ Error sending email:', error.message);
+    console.error('Full error:', error);
     return { success: false, error: error.message };
   }
 };
@@ -40,14 +47,14 @@ const sendWorkerRegistrationEmail = async (workerEmail, workerName) => {
     <html>
     <head>
       <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
         .header { background: #f97316; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
         .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
         .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; padding: 20px; }
       </style>
     </head>
-    <body>      <div class="container">
+    <body>
+      <div class="container">
         <div class="header">
           <h1 style="margin: 0;">MaidConnect</h1>
         </div>
@@ -89,14 +96,14 @@ const sendWorkerApprovalEmail = async (workerEmail, workerName) => {
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
         .header { background: #10b981; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
         .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
-        .badge { display: inline-block; background: #10b981; color: white; padding: 8px 16px; border-radius: 20px; margin: 10px 0; font-weight: bold; }
-        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; padding: 20px; }
+        .badge { display: inline-block; background: #10b981; color: white; padding: 8px 16px; border-radius: 20px; margin: 10px 0; font-weight: bold; }        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; padding: 20px; }
       </style>
     </head>
     <body>
       <div class="container">
         <div class="header">
-          <h1 style="margin: 0;">🎉 Profile Approved!</h1>        </div>
+          <h1 style="margin: 0;">🎉 Profile Approved!</h1>
+        </div>
         <div class="content">
           <h2>Congratulations, ${workerName}!</h2>
           <p>Great news! Your profile has been <span class="badge">APPROVED</span> by our verification team.</p>
@@ -138,14 +145,14 @@ const sendWorkerRejectionEmail = async (workerEmail, workerName, reason = '') =>
         .header { background: #ef4444; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
         .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
         .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; padding: 20px; }
-      </style>
-    </head>
+      </style>    </head>
     <body>
       <div class="container">
         <div class="header">
           <h1 style="margin: 0;">Application Update</h1>
         </div>
-        <div class="content">          <h2>Dear ${workerName},</h2>
+        <div class="content">
+          <h2>Dear ${workerName},</h2>
           <p>Thank you for your interest in joining MaidConnect.</p>
           
           <p>After reviewing your application, we regret to inform you that we cannot approve it at this time.</p>
@@ -187,14 +194,14 @@ const sendBusinessRegistrationEmail = async (businessEmail, businessName, ownerN
     <body>
       <div class="container">
         <div class="header">
-          <h1 style="margin: 0;">Welcome to MaidConnect</h1>
-        </div>
+          <h1 style="margin: 0;">Welcome to MaidConnect</h1>        </div>
         <div class="content">
           <h2>Hello ${ownerName},</h2>
           <p>Thank you for registering <strong>${businessName}</strong> with MaidConnect.</p>
           
           <h3>Next Steps:</h3>
-          <ol>            <li>Our team will review your application</li>
+          <ol>
+            <li>Our team will review your application</li>
             <li>You'll receive a payment link for your chosen plan</li>
             <li>Once payment is confirmed, your account will be activated</li>
           </ol>
@@ -236,14 +243,14 @@ const sendBookingConfirmationEmail = async (customerEmail, customerName, workerN
       <div class="container">
         <div class="header">
           <h1 style="margin: 0;">Booking Confirmed! ✅</h1>
-        </div>
-        <div class="content">
+        </div>        <div class="content">
           <h2>Hi ${customerName},</h2>
           <p>Your booking has been confirmed successfully.</p>
           
           <div class="booking-details">
             <h3 style="margin-top: 0;">Booking Details:</h3>
-            <div class="detail-row">              <span><strong>Worker:</strong></span>
+            <div class="detail-row">
+              <span><strong>Worker:</strong></span>
               <span>${workerName}</span>
             </div>
             <div class="detail-row">
