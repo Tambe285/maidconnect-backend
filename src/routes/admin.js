@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
-const { sendBusinessApprovalEmail } = require('../utils/emailService');
+// const { sendBusinessApprovalEmail } = require('../utils/emailService');
 
 // ==========================================
 // 1. ADMIN LOGIN ROUTE
