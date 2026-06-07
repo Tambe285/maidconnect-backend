@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
+const { sendBusinessApprovalEmail } = require('../utils/emailService');
 
 // ==========================================
 // 1. ADMIN LOGIN ROUTE
@@ -61,22 +62,30 @@ router.patch('/applications/:id', async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const currentResult = await query(`SELECT status FROM waitlist WHERE id = $1`, [id]);
+    // Get current application details
+    const currentResult = await query(`SELECT * FROM waitlist WHERE id = $1`, [id]);
     
     if (currentResult.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Application not found' });
     }
     
     const currentStatus = currentResult.rows[0].status;
+    const app = currentResult.rows[0];
 
     if (currentStatus === status) {
       return res.json({ success: true, message: 'Status unchanged' });
     }
 
+    // Update status
     const result = await query(
       `UPDATE waitlist SET status = $1 WHERE id = $2 RETURNING *`,
       [status, id]
     );
+
+    // Send email if approved
+    if (status === 'approved') {
+      sendBusinessApprovalEmail(app.email, app.business_name);
+    }
 
     res.json({ success: true, application: result.rows[0] });
   } catch (error) {
