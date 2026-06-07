@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
+const { sendWorkerApprovalEmail, sendWorkerRejectionEmail, sendBusinessRegistrationEmail } = require('../emailService');
 
 function requireAuth(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -46,8 +47,7 @@ router.patch('/applications/:id', requireAuth, async (req, res) => {
     const current = await query(`SELECT * FROM waitlist WHERE id = $1`, [id]);
     if (current.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Application not found' });
-    }
-    const result = await query(
+    }    const result = await query(
       `UPDATE waitlist SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
       [status, id]
     );
@@ -96,8 +96,7 @@ router.get('/stats', requireAuth, async (req, res) => {
       query(`SELECT COUNT(*) as total, COUNT(CASE WHEN status='pending' THEN 1 END) as pending, COUNT(CASE WHEN status='approved' THEN 1 END) as approved FROM workers`),
       query(`SELECT COUNT(*) as total FROM promoters`)
     ]);
-    res.json({
-      success: true,
+    res.json({      success: true,
       stats: {
         applications: apps.rows[0],
         workers: workers.rows[0],
