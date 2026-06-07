@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
+const { 
+  sendWorkerRegistrationEmail, 
+  sendWorkerStatusEmail 
+} = require('../utils/emailService');
 
 // ==========================================
 // WORKER REGISTRATION
@@ -33,15 +37,17 @@ router.post('/register', async (req, res) => {
       experience_years || 0, preferred_location, availability, document_urls || []
     ]);
 
+    // Send confirmation email
+    sendWorkerRegistrationEmail(email, full_name);
+
     res.json({ 
       success: true, 
-      message: 'Registration successful! Our team will verify your details.',
+      message: 'Registration successful! Check your email for confirmation.',
       worker: result.rows[0]
     });
   } catch (error) {
     console.error('Error registering worker:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
+    res.status(500).json({ success: false, error: error.message });  }
 });
 
 // ==========================================
@@ -78,14 +84,22 @@ router.patch('/:id', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid status' });
     }
 
-    const result = await query(
-      `UPDATE workers SET status = $1, verified_by = $2, updated_at = NOW() WHERE id = $3 RETURNING *`,
-      [status, verified_by || 'Admin', id]
-    );
-
-    if (result.rows.length === 0) {
+    // Get worker details first to send email
+    const currentWorker = await query(`SELECT * FROM workers WHERE id = $1`, [id]);
+    
+    if (currentWorker.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Worker not found' });
     }
+
+    const worker = currentWorker.rows[0];
+
+    // Update status
+    const result = await query(
+      `UPDATE workers SET status = $1, verified_by = $2, updated_at = NOW() WHERE id = $3 RETURNING *`,
+      [status, verified_by || 'Admin', id]    );
+
+    // Send status update email
+    sendWorkerStatusEmail(worker.email, worker.full_name, status);
 
     res.json({ success: true, worker: result.rows[0] });
   } catch (error) {
