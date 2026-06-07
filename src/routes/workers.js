@@ -20,6 +20,20 @@ router.post('/register', upload.fields([
       return res.status(400).json({ success: false, error: 'Full name, phone, and email are required' });
     }
 
+    // Parse skills - handle both string and array
+    let skillsArray = [];
+    if (skills) {
+      if (typeof skills === 'string') {
+        try {
+          skillsArray = JSON.parse(skills);
+        } catch (e) {
+          skillsArray = skills.split(',').map(s => s.trim());
+        }
+      } else if (Array.isArray(skills)) {
+        skillsArray = skills;
+      }
+    }
+
     // Get uploaded file URLs
     const documentUrls = [];
     if (req.files['aadhaar_front']) {
@@ -40,9 +54,9 @@ router.post('/register', upload.fields([
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING *
     `, [
-      full_name, phone, email, age, gender,
-      aadhaar_number, pan_number, skills || [],
-      experience_years || 0, preferred_location, availability, documentUrls
+      full_name, phone, email, age ? parseInt(age) : null, gender,
+      aadhaar_number, pan_number, skillsArray,
+      experience_years ? parseInt(experience_years) : 0, preferred_location, availability, documentUrls
     ]);
 
     res.json({ success: true, message: 'Registration successful!', worker: result.rows[0] });
@@ -51,19 +65,8 @@ router.post('/register', upload.fields([
     res.status(500).json({ success: false, error: error.message });
   }
 });
-
-// Get all workers (admin)
-router.get('/all', async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ success: false, error: 'Unauthorized' });
-
-    const result = await query(`SELECT * FROM workers ORDER BY created_at DESC`);
-    res.json({ success: true, workers: result.rows });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
+  
+  
 
 // Update worker status (admin)
 router.patch('/:id', async (req, res) => {
