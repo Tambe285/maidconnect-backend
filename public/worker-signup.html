@@ -1,1 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join as a Worker - MaidConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { orange: '#F97316', dark: '#111827' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Header -->
+    <nav class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-brand-orange rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">MaidConnect</h1>
+                    <p class="text-sm text-gray-500">Worker Registration</p>
+                </div>
+            </div>
+            <a href="/" class="text-gray-600 hover:text-gray-900">← Back to Home</a>
+        </div>
+    </nav>
 
+    <!-- Form -->
+    <div class="max-w-2xl mx-auto px-6 py-12">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Join Our Verified Workforce</h2>
+            <p class="text-gray-600 mb-8">Fill in your details. Our team will verify your documents and get you started.</p>
+
+            <form id="workerForm" class="space-y-6">
+                <!-- Personal Info -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                        <input type="text" id="full_name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                        <input type="tel" id="phone" required placeholder="+919876543210" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                        <input type="email" id="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Age</label>
+                        <input type="number" id="age" min="18" max="65" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                        <select id="gender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Documents -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Identity Documents</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Aadhaar Number</label>
+                            <input type="text" id="aadhaar_number" placeholder="XXXX-XXXX-XXXX" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">PAN Number</label>
+                            <input type="text" id="pan_number" placeholder="ABCDE1234F" class="w-full px-4 py-3
