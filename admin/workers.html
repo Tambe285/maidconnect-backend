@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Management - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { orange: '#F97316', dark: '#111111', light: '#F3F0EB' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-brand-orange rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">MaidConnect Admin</h1>
+                    <p class="text-sm text-gray-500">Worker Management</p>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <a href="/admin/dashboard" class="px-4 py-2 text-gray-600 hover:text-gray-900">Dashboard</a>
+                <a href="/admin/applications" class="px-4 py-2 text-gray-600 hover:text-gray-900">Business Apps</a>
+                <button onclick="logout()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        
+        <!-- Stats -->
+        <div class="grid md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <p class="text-sm text-gray-500 mb-1">Total Workers</p>
+                <p class="text-3xl font-bold text-gray-900" id="totalWorkers">-</p>
+            </div>            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <p class="text-sm text-gray-500 mb-1">Pending Approval</p>
+                <p class="text-3xl font-bold text-yellow-600" id="pendingWorkers">-</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <p class="text-sm text-gray-500 mb-1">Verified Workers</p>
+                <p class="text-3xl font-bold text-green-600" id="verifiedWorkers">-</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <p class="text-sm text-gray-500 mb-1">Rejected</p>
+                <p class="text-3xl font-bold text-red-600" id="rejectedWorkers">-</p>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+            <div class="flex flex-wrap gap-4">
+                <div class="flex-1 min-w-64">
+                    <input type="text" id="searchInput" placeholder="Search by name, phone, email..." 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                </div>
+                <select id="statusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+                <select id="skillFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                    <option value="all">All Skills</option>
+                    <option value="cooking">Cooking</option>
+                    <option value="cleaning">Cleaning</option>
+                    <option value="babysitting">Babysitting</option>
+                    <option value="eldercare">Elder Care</option>
+                    <option value="driver">Driver</option>
+                    <option value="gardening">Gardening</option>
+                </select>
+                <button onclick="loadWorkers()" class="px-6 py-2 bg-brand-orange text-white rounded-lg hover:bg-orange-600 font-medium">
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Workers Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Registered Workers</h2>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Worker</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skills</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experience</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="workersTable">
+                        <tr>
+                            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                <div class="flex justify-center items-center gap-2">
+                                    <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-brand-orange"></div>
+                                    Loading workers...
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Worker Details Modal -->
+    <div id="workerModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gray-900">Worker Details</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="modalContent" class="p-6">
+                <!-- Content loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            window.location.href = '/admin';
+        }
+        let allWorkers = [];
+
+        // Load workers on page load
+        document.addEventListener('DOMContentLoaded', loadWorkers);
+
+        // Search and filter
+        document.getElementById('searchInput').addEventListener('input', filterWorkers);
+        document.getElementById('statusFilter').addEventListener('change', filterWorkers);
+        document.getElementById('skillFilter').addEventListener('change', filterWorkers);
+
+        async function loadWorkers() {
+            try {
+                const res = await fetch('/api/workers/all', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (res.status === 401) {
+                    localStorage.removeItem('adminToken');
+                    window.location.href = '/admin';
+                    return;
+                }
+
+                const data = await res.json();
+                
+                if (data.success) {
+                    allWorkers = data.workers;
+                    displayWorkers(allWorkers);
+                    updateStats(allWorkers);
+                }
+            } catch (error) {
+                console.error('Error loading workers:', error);
+                document.getElementById('workersTable').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-red-500">
+                            Error loading workers. <button onclick="loadWorkers()" class="underline">Retry</button>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function displayWorkers(workers) {
+            const tbody = document.getElementById('workersTable');
+            
+            if (workers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            No workers found
+                        </td>                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = workers.map(worker => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">
+                        <div>
+                            <div class="text-sm font-medium text-gray-900">${worker.full_name}</div>
+                            <div class="text-sm text-gray-500">${worker.gender || 'N/A'} • ${worker.age || 'N/A'} yrs</div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">${worker.phone}</div>
+                        <div class="text-sm text-gray-500">${worker.email}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex flex-wrap gap-1">
+                            ${(worker.skills || []).map(skill => `
+                                <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded capitalize">
+                                    ${skill}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">${worker.experience_years || 0} years</div>
+                        <div class="text-sm text-gray-500">${worker.availability || 'N/A'}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-medium ${getStatusBadgeColor(worker.status)} rounded capitalize">
+                            ${worker.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        ${new Date(worker.created_at).toLocaleDateString('en-IN', { 
+                            day: 'numeric', 
+                            month: 'short', 
+                            year: 'numeric'
+                        })}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="viewWorker('${worker.id}')" class="text-blue-600 hover:text-blue-800 font-medium mr-3">View</button>
+                        ${worker.status === 'pending' ? `
+                            <button onclick="updateWorkerStatus('${worker.id}', 'approved')" class="text-green-600 hover:text-green-800 font-medium mr-2">Approve</button>
+                            <button onclick="updateWorkerStatus('${worker.id}', 'rejected')" class="text-red-600 hover:text-red-800 font-medium">Reject</button>
+                        ` : ''}
+                    </td>
+                </tr>            `).join('');
+        }
+
+        function filterWorkers() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const skillFilter = document.getElementById('skillFilter').value;
+
+            const filtered = allWorkers.filter(worker => {
+                const matchesSearch = !search || 
+                    worker.full_name.toLowerCase().includes(search) ||
+                    worker.phone.includes(search) ||
+                    worker.email.toLowerCase().includes(search);
+                
+                const matchesStatus = statusFilter === 'all' || worker.status === statusFilter;
+                const matchesSkill = skillFilter === 'all' || (worker.skills && worker.skills.includes(skillFilter));
+
+                return matchesSearch && matchesStatus && matchesSkill;
+            });
+
+            displayWorkers(filtered);
+        }
+
+        function updateStats(workers) {
+            document.getElementById('totalWorkers').textContent = workers.length;
+            document.getElementById('pendingWorkers').textContent = workers.filter(w => w.status === 'pending').length;
+            document.getElementById('verifiedWorkers').textContent = workers.filter(w => w.status === 'approved').length;
+            document.getElementById('rejectedWorkers').textContent = workers.filter(w => w.status === 'rejected').length;
+        }
+
+        function getStatusBadgeColor(status) {
+            switch(status) {
+                case 'approved': return 'bg-green-100 text-green-800';
+                case 'rejected': return 'bg-red-100 text-red-800';
+                default: return 'bg-yellow-100 text-yellow-800';
+            }
+        }
+
+        async function viewWorker(id) {
+            const worker = allWorkers.find(w => w.id === id);
+            if (!worker) return;
+
+            const modal = document.getElementById('workerModal');
+            const content = document.getElementById('modalContent');
+
+            content.innerHTML = `
+                <div class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500 mb-1">Full Name</h4>                            <p class="text-gray-900">${worker.full_name}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500 mb-1">Contact</h4>
+                            <p class="text-gray-900">${worker.phone}</p>
+                            <p class="text-gray-600">${worker.email}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500 mb-1">Age & Gender</h4>
+                            <p class="text-gray-900">${worker.age || 'N/A'} years • ${worker.gender || 'N/A'}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500 mb-1">Documents</h4>
+                            <p class="text-gray-900">Aadhaar: ${worker.aadhaar_number || 'Not provided'}</p>
+                            <p class="text-gray-600">PAN: ${worker.pan_number || 'Not provided'}</p>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-200 pt-6">
+                        <h4 class="text-sm font-medium text-gray-500 mb-3">Skills</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${(worker.skills || []).map(skill => `
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm capitalize">${skill}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500 mb-1">Experience</h4>
+                            <p class="text-gray-900">${worker.experience_years || 0} years</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500 mb-1">Availability</h4>
+                            <p class="text-gray-900 capitalize">${worker.availability || 'N/A'}</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500 mb-1">Preferred Location</h4>
+                        <p class="text-gray-900">${worker.preferred_location || 'Not specified'}</p>
+                    </div>
+
+                    <div class="border-t border-gray-200 pt-6">
+                        <h4 class="text-sm font-medium text-gray-500 mb-1">Status</h4>
+                        <span class="px-3 py-1 text-sm font-medium ${getStatusBadgeColor(worker.status)} rounded capitalize">
+                            ${worker.status}
+                        </span>
+                        ${worker.verified_by ? `<p class="text-sm text-gray-500 mt-2">Verified by: ${worker.verified_by}</p>` : ''}
+                    </div>
+                    ${worker.status === 'pending' ? `
+                        <div class="flex gap-3 pt-4">
+                            <button onclick="updateWorkerStatus('${worker.id}', 'approved'); closeModal();" 
+                                    class="flex-1 bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600">
+                                Approve Worker
+                            </button>
+                            <button onclick="updateWorkerStatus('${worker.id}', 'rejected'); closeModal();" 
+                                    class="flex-1 bg-red-500 text-white py-3 rounded-lg font-semibold hover:bg-red-600">
+                                Reject Application
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('workerModal').classList.add('hidden');
+        }
+
+        async function updateWorkerStatus(id, status) {
+            if (!confirm(`Are you sure you want to ${status} this worker?`)) return;
+
+            try {
+                const res = await fetch(`/api/workers/${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status, verified_by: 'Admin' })
+                });
+
+                const data = await res.json();
+                
+                if (data.success) {
+                    alert(`Worker ${status} successfully!`);
+                    loadWorkers();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error updating worker:', error);
+                alert('Failed to update worker status');
+            }
+        }
+        function logout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin';
+        }
+
+        // Close modal on outside click
+        document.getElementById('workerModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>
