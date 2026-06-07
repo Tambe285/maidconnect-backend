@@ -3,7 +3,7 @@ const router = express.Router();
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const { query } = require('../db');
-const { sendPaymentReceiptEmail } = require('../utils/emailService');
+// const { sendPaymentReceiptEmail } = require('../utils/emailService');
 
 // Initialize Razorpay
 let razorpay;
@@ -103,7 +103,7 @@ router.post('/verify', async (req, res) => {
 
     // Send Payment Receipt Email
     if (customerEmail) {
-      sendPaymentReceiptEmail(customerEmail, customerName, amount, plan);
+      // sendPaymentReceiptEmail(customerEmail, customerName, amount, plan);
     }
 
     res.json({ success: true, message: 'Payment verified successfully', paymentId: razorpay_payment_id });
