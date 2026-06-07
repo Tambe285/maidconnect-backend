@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
 const upload = require('../upload');
+const { sendWorkerRegistrationEmail } = require('../emailService');
 
 // Worker registration WITH file upload
 router.post('/register', upload.fields([
@@ -46,8 +47,7 @@ router.post('/register', upload.fields([
       documentUrls.push(`/uploads/${req.files['pan_card'][0].filename}`);
     }
 
-    const result = await query(`
-      INSERT INTO workers (
+    const result = await query(`      INSERT INTO workers (
         full_name, phone, email, age, gender, 
         aadhaar_number, pan_number, skills, 
         experience_years, preferred_location, availability, document_urls
@@ -59,14 +59,30 @@ router.post('/register', upload.fields([
       experience_years ? parseInt(experience_years) : 0, preferred_location, availability, documentUrls
     ]);
 
+    // Send confirmation email (don't wait for it)
+    sendWorkerRegistrationEmail(email, full_name).catch(err => {
+      console.error('Failed to send registration email:', err);
+    });
+
     res.json({ success: true, message: 'Registration successful!', worker: result.rows[0] });
   } catch (error) {
     console.error('Error registering worker:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
-  
-  
+
+// Get all workers (admin)
+router.get('/all', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ success: false, error: 'Unauthorized' });
+
+    const result = await query(`SELECT * FROM workers ORDER BY created_at DESC`);
+    res.json({ success: true, workers: result.rows });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 // Update worker status (admin)
 router.patch('/:id', async (req, res) => {
@@ -80,8 +96,7 @@ router.patch('/:id', async (req, res) => {
 
     const result = await query(
       `UPDATE workers SET status = $1, verified_by = $2, updated_at = NOW() WHERE id = $3 RETURNING *`,
-      [status, verified_by || 'Admin', id]
-    );
+      [status, verified_by || 'Admin', id]    );
 
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Worker not found' });
