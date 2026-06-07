@@ -3,8 +3,6 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-const { connectDB } = require('./src/db');
-
 const app = express();
 const PORT = process.env.PORT || 10000;
 
@@ -63,12 +61,6 @@ app.use((err, req, res, next) => {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ MaidConnect API running on port ${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  connectDB()
-    .then(() => console.log('🚀 Database connected — ready to serve requests'))
-    .catch((err) => {
-      console.error('❌ Database connection failed:', err.message);
-      process.exit(1);
-    });
 });
 
 module.exports = app;
