@@ -1,18 +1,35 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
+const upload = require('../upload');
 
-// Worker registration (Public)
-router.post('/register', async (req, res) => {
+// Worker registration WITH file upload
+router.post('/register', upload.fields([
+  { name: 'aadhaar_front', maxCount: 1 },
+  { name: 'aadhaar_back', maxCount: 1 },
+  { name: 'pan_card', maxCount: 1 }
+]), async (req, res) => {
   try {
     const { 
       full_name, phone, email, age, gender, 
       aadhaar_number, pan_number, skills, 
-      experience_years, preferred_location, availability, document_urls 
+      experience_years, preferred_location, availability 
     } = req.body;
 
     if (!full_name || !phone || !email) {
       return res.status(400).json({ success: false, error: 'Full name, phone, and email are required' });
+    }
+
+    // Get uploaded file URLs
+    const documentUrls = [];
+    if (req.files['aadhaar_front']) {
+      documentUrls.push(`/uploads/${req.files['aadhaar_front'][0].filename}`);
+    }
+    if (req.files['aadhaar_back']) {
+      documentUrls.push(`/uploads/${req.files['aadhaar_back'][0].filename}`);
+    }
+    if (req.files['pan_card']) {
+      documentUrls.push(`/uploads/${req.files['pan_card'][0].filename}`);
     }
 
     const result = await query(`
@@ -25,7 +42,7 @@ router.post('/register', async (req, res) => {
     `, [
       full_name, phone, email, age, gender,
       aadhaar_number, pan_number, skills || [],
-      experience_years || 0, preferred_location, availability, document_urls || []
+      experience_years || 0, preferred_location, availability, documentUrls
     ]);
 
     res.json({ success: true, message: 'Registration successful!', worker: result.rows[0] });
@@ -35,7 +52,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Get all workers (Admin - called by frontend)
+// Get all workers (admin)
 router.get('/all', async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -48,7 +65,7 @@ router.get('/all', async (req, res) => {
   }
 });
 
-// Update worker status (Admin)
+// Update worker status (admin)
 router.patch('/:id', async (req, res) => {
   try {
     const { id } = req.params;
