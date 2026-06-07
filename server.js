@@ -20,13 +20,15 @@ app.use('/admin', express.static(path.join(__dirname, 'admin')));
 const adminRoutes = require('./src/routes/admin');
 const paymentRoutes = require('./src/routes/payment');
 const workerRoutes = require('./src/routes/workers');
-const promoterRoutes = require('./src/routes/promoter');
+// Commented out promoter routes for now
+// const promoterRoutes = require('./src/routes/promoter');
 
 // Use routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/workers', workerRoutes);
-app.use('/api/promoter', promoterRoutes);
+// Commented out promoter routes for now
+// app.use('/api/promoter', promoterRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -45,16 +47,16 @@ app.get('/payment/success', (req, res) => {
 
 // Worker signup page
 app.get('/worker-signup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'worker-signup.html'));
-});
-// Promoter pages
-app.get('/promoter-signup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'promoter-signup.html'));
-});
+  res.sendFile(path.join(__dirname, 'public', 'worker-signup.html'));});
 
-app.get('/promoter-dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'promoter-dashboard.html'));
-});
+// Promoter pages (commented out for now)
+// app.get('/promoter-signup', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public', 'promoter-signup.html'));
+// });
+
+// app.get('/promoter-dashboard', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public', 'promoter-dashboard.html'));
+// });
 
 // Serve admin pages
 app.get('/admin', (req, res) => {
@@ -94,15 +96,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`    ╔════════════════════════════════════════════╗
+// Start serverapp.listen(PORT, '0.0.0.0', () => {
+  console.log(`
+    ╔════════════════════════════════════════════╗
     ║                                            ║
     ║     MaidConnect API Server Running!        ║
     ║                                            ║
          Port: ${PORT}                           ║
     ║     Environment: ${process.env.NODE_ENV || 'development'}              ║
-    ║                                            ║
+                                                ║
     ║     Health: http://localhost:${PORT}/health ║
                                                 ║
     ╚════════════════════════════════════════════╝
