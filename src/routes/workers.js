@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { query } = require('../db');
 const upload = require('../upload');
-const { sendWorkerRegistrationEmail } = require('../emailService');
 const { sendWorkerRegistrationSMS } = require('../smsService');
 
 // Worker registration WITH file upload
@@ -68,24 +67,22 @@ router.post('/register', upload.fields([
     ]);
 
     console.log('✅ Worker registered successfully:', result.rows[0].id);
-    console.log('📧 Attempting to send email to:', email);
-    console.log('Email env vars loaded:', {
-      user: process.env.EMAIL_USER ? '✓' : '✗',
-      pass: process.env.EMAIL_PASS ? '✓ (length: ' + process.env.EMAIL_PASS.length + ')' : '✗'
-    });
-
-    // Send confirmation email with detailed logging
-    sendWorkerRegistrationEmail(email, full_name)
+    console.log('📱 Sending SMS to:', phone);
+    
+    // Send SMS notification
+    sendWorkerRegistrationSMS(phone, full_name)
       .then(result => {
-        console.log('✅ Email send result:', result);
+        console.log('✅ SMS sent successfully:', result);
       })
       .catch(err => {
-        console.error('❌ Failed to send registration email:', err);
-        console.error('Error details:', err.message);
-        console.error('Error stack:', err.stack);
+        console.error('❌ Failed to send SMS:', err);
       });
 
-    res.json({ success: true, message: 'Registration successful!', worker: result.rows[0] });
+    res.json({ 
+      success: true, 
+      message: 'Registration successful! You will receive an SMS shortly.', 
+      worker: result.rows[0] 
+    });
   } catch (error) {
     console.error('❌ Error registering worker:', error);
     console.error('Error details:', error.message);
@@ -97,8 +94,8 @@ router.post('/register', upload.fields([
 // Get all workers (admin)
 router.get('/all', async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;    if (!authHeader) return res.status(401).json({ success: false, error: 'Unauthorized' });
-
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ success: false, error: 'Unauthorized' });
     const result = await query(`SELECT * FROM workers ORDER BY created_at DESC`);
     res.json({ success: true, workers: result.rows });
   } catch (error) {
@@ -124,6 +121,14 @@ router.patch('/:id', async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Worker not found' });
     }
+
+    console.log(`Worker ${result.rows[0].full_name} status changed to: ${status}`);
+    console.log('📱 SMS notification will be sent (feature coming soon)');
+
+    // Future: Add SMS notification here
+    // if (status === 'approved') {
+    //   sendWorkerApprovalSMS(result.rows[0].phone, result.rows[0].full_name);
+    // }
 
     res.json({ success: true, worker: result.rows[0] });
   } catch (error) {
