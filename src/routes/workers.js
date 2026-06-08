@@ -3,6 +3,7 @@ const router = express.Router();
 const { query } = require('../db');
 const upload = require('../upload');
 const { sendWorkerRegistrationEmail } = require('../emailService');
+const { sendWorkerRegistrationSMS } = require('../smsService');
 
 // Worker registration WITH file upload
 router.post('/register', upload.fields([
