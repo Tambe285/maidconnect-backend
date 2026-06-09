@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - MaidConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold text-gray-900">My Bookings</h1>
+            <a href="/browse-workers" class="text-orange-600 hover:text-orange-700 font-semibold">← Browse Workers</a>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-6 py-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Your Booking History</h2>
+        <div id="bookingsList" class="space-y-4">
+            <!-- Bookings load here -->
+        </div>
+        <div id="loading" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        </div>
+    </div>
+
+    <script>
+        let customer = JSON.parse(localStorage.getItem('customer'));
+        if (!customer) window.location.href = '/customer-login';
+
+        async function loadBookings() {
+            try {
+                const res = await fetch(`/api/customers/bookings/${customer.id}`);
+                const data = await res.json();
+                
+                document.getElementById('loading').style.display = 'none';
+                const list = document.getElementById('bookingsList');
+                
+                if (data.bookings.length === 0) {
+                    list.innerHTML = '<div class="text-center py-12 bg-white rounded-xl border border-gray-200"><p class="text-gray-500">No bookings yet. Go browse workers!</p></div>';
+                    return;
+                }
+
+                data.bookings.forEach(b => {
+                    const statusColor = b.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+                    const card = `
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900">${b.worker_name}</h3>
+                                    <p class="text-sm text-gray-500">Service: ${b.service_type}</p>
+                                </div>
+                                <span class="${statusColor} px-3 py-1 rounded-full text-sm font-bold capitalize">${b.status}</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 mt-4 text-sm">
+                                <div><span class="text-gray-500">Date:</span> <span class="font-semibold">${new Date(b.booking_date).toLocaleDateString()}</span></div>
+                                <div><span class="text-gray-500">Time:</span> <span class="font-semibold">${b.booking_time}</span></div>
+                                <div><span class="text-gray-500">Amount:</span> <span class="font-semibold">₹${b.total_amount}</span></div>
+                            </div>
+                        </div>
+                    `;
+                    list.innerHTML += card;
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').innerHTML = '<p class="text-red-500">Failed to load bookings.</p>';
+            }
+        }
+        loadBookings();
+    </script>
+</body>
+</html>
