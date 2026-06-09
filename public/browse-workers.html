@@ -179,4 +179,35 @@
                 const res = await fetch('/api/customers/bookings', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body
+                    body: JSON.stringify(bookingData)
+                });
+
+                const data = await res.json();
+                
+                if (data.success) {
+                    alert('Booking Confirmed! The worker will be notified.');
+                    closeModal();
+                    // Optionally redirect to My Bookings
+                    // window.location.href = '/my-bookings';
+                } else {
+                    alert('Error: ' + data.error);
+                    btn.disabled = false;
+                    btn.textContent = 'Confirm Booking';
+                }
+            } catch (error) {                console.error('Error:', error);
+                alert('Failed to book. Please try again.');
+                btn.disabled = false;
+                btn.textContent = 'Confirm Booking';
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('customer');
+            window.location.href = '/customer-login';
+        }
+
+        // Load workers on page load
+        loadWorkers();
+    </script>
+</body>
+</html>
