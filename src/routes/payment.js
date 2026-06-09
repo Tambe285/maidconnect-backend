@@ -4,56 +4,95 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const { query } = require('../db');
 
-let razorpay;
-try {
-  if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
-    razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET
-    });
-  }
-} catch (error) {
-  console.error('Failed to init Razorpay');
-}
+// Initialize Razorpay
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
+});
 
-router.post('/generate-link', async (req, res) => {
+// 1. Initiate Booking & Create Order
+router.post('/initiate-booking', async (req, res) => {
   try {
-    if (!razorpay) return res.status(503).json({ success: false, error: 'Payment not configured' });
+    const { customer_id, worker_id, booking_date, booking_time, service_type, duration_hours, notes } = req.body;
 
-    const { applicationId, amount, plan, customerEmail, customerName } = req.body;
-    const amountInPaise = Math.round(amount * 100);
-    
-    const paymentLink = await razorpay.paymentLink.create({
-      amount: amountInPaise,
+    // Calculate amount (Example: ₹300 per hour)
+    const hourlyRate = 300;
+    const totalAmount = hourlyRate * duration_hours;
+
+    // Create Razorpay Order
+    const options = {
+      amount: totalAmount * 100, // Amount in paise
       currency: 'INR',
-      accept_partial: false,
-      expire_by: Date.now() + (7 * 24 * 60 * 60 * 1000),
-      reference_id: `payment_${applicationId}_${Date.now()}`,
-      description: `MaidConnect ${plan} Plan`,
-      customer: { name: customerName, email: customerEmail, contact: '+919876543210' },
-      notify: { sms: false, email: true },
-      reminder_enable: true,
-      callback_url: `${process.env.FRONTEND_URL}/payment/success`,
-      callback_method: 'get'
+      receipt: `receipt_booking_${Date.now()}`,
+      notes: {
+        customer_id,
+        worker_id,
+        service_type,
+        duration_hours
+      }
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    res.json({
+      success: true,
+      orderId: order.id,
+      amount: totalAmount,
+      currency: 'INR',
+      key: process.env.RAZORPAY_KEY_ID
     });
-
-    await query(
-      `UPDATE waitlist SET payment_link = $1, payment_status = 'pending' WHERE id = $2`,
-      [paymentLink.short_url, applicationId]
-    );
-
-    res.json({ success: true, paymentLink: paymentLink.short_url });
   } catch (error) {
+    console.error('Error creating order:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
-router.post('/verify', async (req, res) => {
+// 2. Verify Payment & Confirm Booking
+router.post('/confirm-booking', async (req, res) => {
   try {
-    const { razorpay_payment_id, razorpay_signature, applicationId } = req.body;
-    // Simplified verification for now
-    res.json({ success: true, message: 'Payment verified' });
+    const { 
+      razorpay_order_id, 
+      razorpay_payment_id, 
+      razorpay_signature,
+      customer_id, 
+      worker_id, 
+      booking_date, 
+      booking_time, 
+      service_type, 
+      duration_hours, 
+      notes 
+    } = req.body;
+
+    // Verify Signature
+    const sign = razorpay_order_id + '|' + razorpay_payment_id;
+    const expectedSign = crypto
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(sign.toString())
+      .digest('hex');
+
+    if (razorpay_signature !== expectedSign) {
+      return res.status(400).json({ success: false, error: 'Invalid payment signature' });
+    }
+
+    // Payment Verified! Create Booking in Database
+    const hourlyRate = 300;
+    const totalAmount = hourlyRate * duration_hours;
+
+    const result = await query(`
+      INSERT INTO bookings (
+        customer_id, worker_id, booking_date, booking_time, service_type, 
+        duration_hours, total_amount, notes, status, payment_status, 
+        razorpay_order_id, razorpay_payment_id
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'confirmed', 'paid', $9, $10)
+      RETURNING *
+    `, [
+      customer_id, worker_id, booking_date, booking_time, service_type,
+      duration_hours, totalAmount, notes, razorpay_order_id, razorpay_payment_id
+    ]);
+
+    res.json({ success: true, message: 'Booking confirmed!', booking: result.rows[0] });
   } catch (error) {
+    console.error('Error confirming booking:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
