@@ -3,33 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - MaidConnect</title>
+    <title>Customer Login - MaidConnect</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
-    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 w-full max-w-md">
-        <h1 class="text-2xl font-bold text-gray-900 mb-6 text-center">Welcome Back</h1>
-        <form id="loginForm" class="space-y-4">
-            <input type="email" id="email" placeholder="Email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-            <input type="password" id="password" placeholder="Password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-            <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700">Login</button>
-        </form>
-        <p class="text-center mt-4 text-sm text-gray-600">New here? <a href="/customer-signup" class="text-blue-600">Sign Up</a></p>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">MaidConnect</h1>
+                    <p class="text-sm text-gray-500">Customer Portal</p>
+                </div>
+            </div>
+            <a href="/" class="text-gray-600 hover:text-gray-900">← Back to Home</a>
+        </div>
+    </nav>
+
+    <div class="max-w-md mx-auto px-6 py-12">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome Back!</h2>
+            <p class="text-gray-600 mb-8">Login to browse and book workers</p>
+
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                    <input type="email" id="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password *</label>
+                    <input type="password" id="password" name="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-orange-500 text-white py-4 rounded-xl font-bold text-lg hover:bg-orange-600 transition">
+                    Login
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-gray-600">Don't have an account? 
+                    <a href="/customer-signup" class="text-orange-600 font-semibold hover:text-orange-700">Sign Up</a>
+                </p>
+            </div>
+        </div>
     </div>
+
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const payload = { email: document.getElementById('email').value, password: document.getElementById('password').value };
+            
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Logging in...';
+
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+
             try {
-                const res = await fetch('/api/customers/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                const res = await fetch('/api/customers/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(formData)
+                });
+
                 const data = await res.json();
+                
                 if (data.success) {
+                    // Store customer info in localStorage
                     localStorage.setItem('customer', JSON.stringify(data.customer));
+                    alert('Login successful!');
                     window.location.href = '/browse-workers';
                 } else {
                     alert('Error: ' + data.error);
+                    btn.disabled = false;
+                    btn.textContent = 'Login';
                 }
-            } catch (err) { alert('Failed to connect'); }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to login. Please try again.');
+                btn.disabled = false;
+                btn.textContent = 'Login';
+            }
         });
     </script>
 </body>
